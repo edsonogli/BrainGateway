@@ -1,30 +1,18 @@
 // src/components/AuthContext.jsx
-import React, { createContext, useContext, useState } from 'react';
-import axios from 'axios';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [error, setError] = useState(null);
 
-    const login = async (credentials) => {
-        try {
-            const response = await axios.post(
-                'https://brainbot-hkdxhqbqe4hgbgb5.brazilsouth-01.azurewebsites.net/api/auth/login',
-                credentials
-            );
-            if (response.status === 200) {
-                const token = response.data.token; // Supondo que o token esteja na resposta
-                localStorage.setItem('authToken', token); // Salva o token no localStorage
-                setIsAuthenticated(true);
-                setError(null);
-            }
-        } catch (err) {
-            setError('Invalid login credentials');
-            setIsAuthenticated(false);
+    // Carrega o estado de autenticação do localStorage
+    useEffect(() => {
+        const token = localStorage.getItem('authToken');
+        if (token) {
+            setIsAuthenticated(true);
         }
-    };
+    }, []);
 
     const logout = () => {
         localStorage.removeItem('authToken'); // Remove o token ao deslogar
@@ -32,7 +20,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, login, logout, error }}>
+        <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, logout }}>
             {children}
         </AuthContext.Provider>
     );

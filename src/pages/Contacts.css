@@ -31,6 +31,20 @@
     background-color: #f1f1f1;
 }
 
+.inactivate-button {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.inactivate-button:hover {
+    background-color: #e60000;
+}
+
 .error-message {
     color: red;
     margin-top: 10px;

@@ -4,7 +4,7 @@ import { useApi } from '../contexts/ApiContext';
 import './Contacts.css';
 
 const Contacts = () => {
-    const { getContacts } = useApi(); // Obtém a função getContacts do ApiContext
+    const { getContacts, InativeContact } = useApi(); // Obtém a função getContacts do ApiContext
     const [contacts, setContacts] = useState([]);
     const [error, setError] = useState(null);
 
@@ -22,15 +22,34 @@ const Contacts = () => {
         fetchContacts();
     }, [getContacts]);
 
+    // Função para inativar o contato
+    const handleInactivate = async (contactId) => {
+        try {
+            await InativeContact(contactId);
+            // Atualiza a lista de contatos localmente após a inativação
+            setContacts((prevContacts) =>
+                prevContacts.map((contact) =>
+                    contact.id === contactId ? { ...contact, active: false } : contact
+                )
+            );
+        } catch (err) {
+            setError('Failed to inactivate contact');
+            console.error(err);
+        }
+    };
+
     return (
         <div className="contacts-container">
-            <h2>Contacts</h2>
+            <h2>Contatos</h2>
             {error && <p className="error-message">{error}</p>}
             <table className="contacts-table">
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Phone Number</th>
+                        <th>Nome</th>
+                        <th>Número</th>
+                        <th>Projeto</th>
+                        <th>Active</th>
+                        <th>Ação</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -38,6 +57,20 @@ const Contacts = () => {
                         <tr key={index}>
                             <td>{contact.name}</td>
                             <td>{contact.number}</td>
+                            <td>{contact.projectId}</td>
+                            <td>{contact.active.toString()}</td>
+                            <td>
+                                {contact.active ? (
+                                    <button
+                                        onClick={() => handleInactivate(contact.id)}
+                                        className="inactivate-button"
+                                    >
+                                        Inativar
+                                    </button>
+                                ) : (
+                                    'Inativado'
+                                )}
+                            </td>
                         </tr>
                     ))}
                 </tbody>

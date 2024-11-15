@@ -10,6 +10,8 @@ import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import Projects from './pages/Projects';
 import Contacts from './pages/Contacts';
+import ProjectDetails from './pages/ProjectDetails';
+import ProjectCreate from './pages/ProjectCreate';
 
 const ProtectedRoute = ({ children }) => {
     const { isAuthenticated } = useAuth();
@@ -37,6 +39,8 @@ const App = () => {
                         <Route path="settings" element={<Settings />} />
                         <Route path="projects" element={<Projects />} />
                         <Route path="contacts" element={<Contacts />} />
+                        <Route path="projects/:id" element={<ProjectDetails />} /> {/* Detalhes do projeto como sub-rota */}
+                        <Route path="projects/create" element={<ProjectCreate />} /> {/* Rota de criação */}
                     </Route>
                 </Routes>
                 </ApiProvider>

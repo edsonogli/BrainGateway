@@ -1,0 +1,70 @@
+/* src/pages/CreateProject.css */
+
+.create-project-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.create-project-container h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.create-project-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.create-project-container label {
+    font-size: 1rem;
+    color: #555;
+    font-weight: 500;
+}
+
+.create-project-container input,
+.create-project-container select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.create-project-container input:focus,
+.create-project-container select:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.create-project-container button {
+    width: 100%;
+    padding: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+}
+
+.create-project-container button:hover {
+    background-color: #0056b3;
+}
+
+.error-message {
+    color: #ff4d4d;
+    font-size: 0.9rem;
+    text-align: center;
+}

@@ -1,13 +1,14 @@
 // src/pages/LoginPage.jsx
 import React, { useState } from 'react';
-import { useAuth } from '../components/AuthContext';
+import { useApi } from '../contexts/ApiContext';
 import { useNavigate } from 'react-router-dom';
 import './LoginPage.css';
 
 const LoginPage = () => {
-    const { login, error } = useAuth();
+    const { login } = useApi();
     const navigate = useNavigate();
     const [credentials, setCredentials] = useState({ email: '', password: '' });
+    const [error, setError] = useState(null);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -16,9 +17,11 @@ const LoginPage = () => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        await login(credentials);
-        if (!error) {
-            navigate('/admin/dashboard'); // Redireciona para a página inicial após login
+        try {
+            await login(credentials);
+            navigate('/admin/dashboard'); // Redireciona para o dashboard após login
+        } catch (err) {
+            setError('Login failed. Please check your credentials.');
         }
     };
 
