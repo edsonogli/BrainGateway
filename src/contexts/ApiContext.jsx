@@ -60,6 +60,8 @@ export const ApiProvider = ({ children }) => {
 
     const updateProject = async (projectId, updatedData) => {
         // updatedData.id = projectId;
+        var isTrueSet = (updatedData.active === 'true');
+        updatedData.active = isTrueSet;
         const response = await api.put(`/Brain/Project`, updatedData);
         return response.data;
     };
