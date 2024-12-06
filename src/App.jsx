@@ -9,6 +9,8 @@ import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import Projects from './pages/Projects';
+import Logs from './pages/LogsWebhook';
+import Assistants from './pages/Assistants';
 import Contacts from './pages/Contacts';
 import ProjectDetails from './pages/ProjectDetails';
 import ProjectCreate from './pages/ProjectCreate';
@@ -36,9 +38,11 @@ const App = () => {
                     >
                         <Route path="dashboard" element={<Dashboard />} />
                         <Route path="profile" element={<Profile />} />
+                        <Route path="assistants" element={<Assistants />} />
                         <Route path="settings" element={<Settings />} />
                         <Route path="projects" element={<Projects />} />
                         <Route path="contacts" element={<Contacts />} />
+                        <Route path="logs" element={<Logs />} />
                         <Route path="projects/:id" element={<ProjectDetails />} /> {/* Detalhes do projeto como sub-rota */}
                         <Route path="projects/create" element={<ProjectCreate />} /> {/* Rota de criação */}
                     </Route>

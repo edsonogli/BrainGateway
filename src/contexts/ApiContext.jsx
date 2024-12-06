@@ -43,7 +43,11 @@ export const ApiProvider = ({ children }) => {
         const response = await api.post(`/Wpp/InativeContact?id=${contactId}`);
         return response.status;
     };
-
+    const AtiveContact = async (contactId) => {
+        const response = await api.post(`/Wpp/AtiveContact?id=${contactId}`);
+        return response.status;
+    };
+    
     const getProjects = async () => {
         const response = await api.get('/Brain/Projects');
         return response.data;
@@ -55,7 +59,8 @@ export const ApiProvider = ({ children }) => {
     };
 
     const updateProject = async (projectId, updatedData) => {
-        const response = await api.post(`/Brain/Project`, updatedData);
+        // updatedData.id = projectId;
+        const response = await api.put(`/Brain/Project`, updatedData);
         return response.data;
     };
 
@@ -64,8 +69,18 @@ export const ApiProvider = ({ children }) => {
         return response.data;
     };
 
+    const getLogs = async () => {
+        const response = await api.get('/Brain/Logs');
+        return response.data;
+    };
+
+    const getAssistants = async () => {
+        const response = await api.get('/Gpt/Assistant');
+        return response.data;
+    };
+    
     return (
-        <ApiContext.Provider value={{ login, getContacts, InativeContact, getProjects,getProjectById, updateProject,createProject   }}>
+        <ApiContext.Provider value={{ login, getContacts, InativeContact,AtiveContact, getProjects,getProjectById, updateProject,createProject, getLogs ,getAssistants  }}>
             {children}
         </ApiContext.Provider>
     );

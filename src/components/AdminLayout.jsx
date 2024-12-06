@@ -24,11 +24,13 @@ const AdminLayout = () => {
                 <nav className="sidebar-nav">
                     <Link to="/admin/dashboard" onClick={toggleSidebar}>Dashboard</Link>
                     <Link to="/admin/profile" onClick={toggleSidebar}>Profile</Link>
+                    <Link to="/admin/assistants" onClick={toggleSidebar}>Assistentes</Link>
                     <Link to="/admin/settings" onClick={toggleSidebar}>Settings</Link>
                     <Link to="/admin/projects" onClick={toggleSidebar}>Projetos</Link>
                     <Link to="/admin/contacts" onClick={toggleSidebar}>Contatos</Link>
                     <Link to="/admin/messages" onClick={toggleSidebar}>Mensagens</Link>
                     <Link to="/admin/campaings" onClick={toggleSidebar}>Campanhas</Link>
+                    <Link to="/admin/logs" onClick={toggleSidebar}>Logs</Link>
                 </nav>
             </aside>
 
