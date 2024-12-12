@@ -1,11 +1,12 @@
-// src/pages/Contacts.jsx
 import React, { useEffect, useState } from 'react';
 import { useApi } from '../contexts/ApiContext';
 import './Contacts.css';
 
 const Contacts = () => {
-    const { getContacts, InativeContact, AtiveContact } = useApi(); // Obtém a função getContacts do ApiContext
+    const { getContacts, InativeContact, AtiveContact } = useApi();
     const [contacts, setContacts] = useState([]);
+    const [filteredContacts, setFilteredContacts] = useState([]); // Para armazenar os contatos filtrados
+    const [searchTerm, setSearchTerm] = useState(''); // Estado para o termo de busca
     const [error, setError] = useState(null);
 
     useEffect(() => {
@@ -13,6 +14,7 @@ const Contacts = () => {
             try {
                 const data = await getContacts();
                 setContacts(data);
+                setFilteredContacts(data); // Inicializa os contatos filtrados com todos os contatos
             } catch (err) {
                 setError('Failed to fetch contacts');
                 console.error(err);
@@ -22,11 +24,21 @@ const Contacts = () => {
         fetchContacts();
     }, [getContacts]);
 
-    // Função para inativar o contato
+    useEffect(() => {
+        // Filtro baseado no termo de busca
+        const lowerCaseSearchTerm = searchTerm.toLowerCase();
+        setFilteredContacts(
+            contacts.filter(
+                (contact) =>
+                    contact.name.toLowerCase().includes(lowerCaseSearchTerm) ||
+                    contact.number.toLowerCase().includes(lowerCaseSearchTerm)
+            )
+        );
+    }, [searchTerm, contacts]);
+
     const handleInactivate = async (contactId) => {
         try {
             await InativeContact(contactId);
-            // Atualiza a lista de contatos localmente após a inativação
             setContacts((prevContacts) =>
                 prevContacts.map((contact) =>
                     contact.id === contactId ? { ...contact, active: false } : contact
@@ -37,10 +49,10 @@ const Contacts = () => {
             console.error(err);
         }
     };
+
     const handleActivate = async (contactId) => {
         try {
             await AtiveContact(contactId);
-            // Atualiza a lista de contatos localmente após a inativação
             setContacts((prevContacts) =>
                 prevContacts.map((contact) =>
                     contact.id === contactId ? { ...contact, active: true } : contact
@@ -56,6 +68,18 @@ const Contacts = () => {
         <div className="contacts-container">
             <h2>Contatos</h2>
             {error && <p className="error-message">{error}</p>}
+
+            {/* Campo de busca */}
+            <div className="search-container">
+                <input
+                    type="text"
+                    placeholder="Filtrar por nome ou número"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="search-input"
+                />
+            </div>
+
             <table className="contacts-table">
                 <thead>
                     <tr>
@@ -67,12 +91,12 @@ const Contacts = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {contacts.map((contact, index) => (
+                    {filteredContacts.map((contact, index) => (
                         <tr key={index}>
                             <td>{contact.name}</td>
                             <td>{contact.number}</td>
                             <td>{contact.projectId}</td>
-                            <td>{contact.active ? 'Sim' : 'Não' }</td>
+                            <td>{contact.active ? 'Sim' : 'Não'}</td>
                             <td>
                                 {contact.active ? (
                                     <button
@@ -83,11 +107,11 @@ const Contacts = () => {
                                     </button>
                                 ) : (
                                     <button
-                                    onClick={() => handleActivate(contact.id)}
-                                    className="activate-button"
-                                >
-                                    Ativar
-                                </button>
+                                        onClick={() => handleActivate(contact.id)}
+                                        className="activate-button"
+                                    >
+                                        Ativar
+                                    </button>
                                 )}
                             </td>
                         </tr>

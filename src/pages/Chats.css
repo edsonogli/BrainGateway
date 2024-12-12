@@ -1,0 +1,174 @@
+.chats-page {
+    display: flex; /* Usar flexbox para manter os elementos lado a lado */
+    height: 100vh;
+    font-family: Arial, sans-serif;
+}
+
+/* Sidebar de contatos para telas maiores */
+.contacts-sidebar {
+    width: 25%; /* Sidebar ocupa 25% da largura */
+    background: #f0f0f0;
+    border-right: 1px solid #ccc;
+    overflow-y: auto;
+    padding: 15px;
+    display: block; /* Sempre visível em telas maiores */
+}
+
+.contacts-sidebar h3 {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.contacts-sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.contacts-sidebar .contact {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+}
+
+.contacts-sidebar .contact:hover,
+.contacts-sidebar .contact.active {
+    background: #ddd;
+    font-weight: bold;
+}
+
+/* Painel de mensagens */
+.chat-panel {
+    flex-grow: 1; /* Ocupa todo o espaço restante */
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    overflow-y: auto;
+}
+
+/* Drawer de contatos para telas menores */
+.contacts-drawer {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 80%;
+    max-width: 300px;
+    height: 100%;
+    background-color: #f0f0f0;
+    border-right: 1px solid #ccc;
+    overflow-y: auto;
+    padding: 15px;
+    transition: left 0.3s ease-in-out;
+    z-index: 1000;
+    display: none; /* Oculto por padrão */
+}
+
+.contacts-drawer.open {
+    left: 0;
+    display: block; /* Exibido quando ativado */
+}
+
+.contacts-drawer h3 {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.contacts-drawer ul {
+    list-style: none;
+    padding: 0;
+}
+
+.contacts-drawer .contact {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+}
+
+.contacts-drawer .contact:hover,
+.contacts-drawer .contact.active {
+    background: #ddd;
+    font-weight: bold;
+}
+
+/* Botão para abrir/fechar o menu de contatos em telas menores */
+.toggle-menu {
+    display: none; /* Escondido em telas maiores */
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    margin: 10px auto; /* Centralizado no topo */
+    cursor: pointer;
+    border-radius: 5px;
+    width: fit-content;
+}
+
+.toggle-menu:hover {
+    background-color: #0056b3;
+}
+
+/* Mensagens */
+.messages {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.message {
+    max-width: 70%;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.9em;
+    position: relative;
+}
+
+.message.sent {
+    background: #e0ffe0;
+    align-self: flex-end;
+}
+
+.message.received {
+    background: #ffe0e0;
+    align-self: flex-start;
+}
+
+.timestamp {
+    font-size: 0.8em;
+    color: #888;
+    margin-top: 5px;
+    display: block;
+    text-align: right;
+}
+
+.no-chat-selected {
+    color: #666;
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Comportamento responsivo */
+@media (max-width: 768px) {
+    .contacts-sidebar {
+        display: none; /* Escondido em telas menores */
+    }
+
+    .contacts-drawer {
+        display: block; /* Ativar drawer em telas menores */
+    }
+
+    .toggle-menu {
+        display: block; /* Mostrar botão em telas menores */
+        margin: 10px auto; /* Garante que o botão fique no topo e centralizado */
+        position: relative; /* Não sai do fluxo normal */
+    }
+
+    .chats-page {
+        flex-direction: column; /* Elementos empilhados em telas menores */
+    }
+
+    .chat-panel {
+        flex-grow: 1; /* Garantir que o chat preencha o espaço restante */
+    }
+}

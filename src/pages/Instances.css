@@ -61,17 +61,3 @@
     color: red;
     margin-top: 10px;
 }
-
-.search-container {
-    margin-bottom: 20px;
-    text-align: right; /* Alinha o campo de busca à direita */
-}
-
-.search-input {
-    padding: 8px 12px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 100%;
-    max-width: 300px;
-}

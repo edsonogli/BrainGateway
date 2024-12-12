@@ -80,9 +80,19 @@ export const ApiProvider = ({ children }) => {
         const response = await api.get('/Gpt/Assistant');
         return response.data;
     };
+
+    const getInstances = async () => {
+        const response = await api.get('/Wpp/Instances');
+        return response.data;
+    };
+
+    const getChats = async () => {
+        const response = await api.get('/Brain/Chats');
+        return response.data;
+    };
     
     return (
-        <ApiContext.Provider value={{ login, getContacts, InativeContact,AtiveContact, getProjects,getProjectById, updateProject,createProject, getLogs ,getAssistants  }}>
+        <ApiContext.Provider value={{login,getContacts,InativeContact,AtiveContact,getProjects,getProjectById,updateProject,createProject,getLogs,getAssistants,getInstances,getChats }}>
             {children}
         </ApiContext.Provider>
     );

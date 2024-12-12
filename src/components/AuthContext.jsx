@@ -1,26 +1,26 @@
-// src/components/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isLoading, setIsLoading] = useState(true); // Novo estado para controlar carregamento
 
-    // Carrega o estado de autenticação do localStorage
     useEffect(() => {
         const token = localStorage.getItem('authToken');
         if (token) {
-            setIsAuthenticated(true);
+            setIsAuthenticated(true); // Define como autenticado se o token existir
         }
+        setIsLoading(false); // Carregamento concluído
     }, []);
 
     const logout = () => {
-        localStorage.removeItem('authToken'); // Remove o token ao deslogar
+        localStorage.removeItem('authToken');
         setIsAuthenticated(false);
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, logout }}>
+        <AuthContext.Provider value={{ isAuthenticated, isLoading, setIsAuthenticated, logout }}>
             {children}
         </AuthContext.Provider>
     );

@@ -10,13 +10,21 @@ import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import Projects from './pages/Projects';
 import Logs from './pages/LogsWebhook';
+import Instances from './pages/Instances';
 import Assistants from './pages/Assistants';
 import Contacts from './pages/Contacts';
+import Chats from './pages/Chats';
 import ProjectDetails from './pages/ProjectDetails';
 import ProjectCreate from './pages/ProjectCreate';
 
 const ProtectedRoute = ({ children }) => {
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, isLoading } = useAuth();
+
+    if (isLoading) {
+        // Exiba um spinner ou mensagem de carregamento enquanto verifica a autenticação
+        return <div>Carregando...</div>;
+    }
+
     return isAuthenticated ? children : <Navigate to="/login" />;
 };
 
@@ -39,9 +47,11 @@ const App = () => {
                         <Route path="dashboard" element={<Dashboard />} />
                         <Route path="profile" element={<Profile />} />
                         <Route path="assistants" element={<Assistants />} />
+                        <Route path="instances" element={<Instances />} />
                         <Route path="settings" element={<Settings />} />
                         <Route path="projects" element={<Projects />} />
                         <Route path="contacts" element={<Contacts />} />
+                        <Route path="chats" element={<Chats />} />
                         <Route path="logs" element={<Logs />} />
                         <Route path="projects/:id" element={<ProjectDetails />} /> {/* Detalhes do projeto como sub-rota */}
                         <Route path="projects/create" element={<ProjectCreate />} /> {/* Rota de criação */}
