@@ -1,10 +1,13 @@
 // src/components/AdminLayout.jsx
 import React, { useState } from 'react';
 import { Link, Outlet } from 'react-router-dom';
+import { useApi } from '../contexts/ApiContext';
+import LoadingSpinner from './LoadingSpinner';
 import './AdminLayout.css';
 
 const AdminLayout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const { isLoading } = useApi();
 
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
@@ -47,7 +50,10 @@ const AdminLayout = () => {
                     </div>
                 </header>
 
-                <Outlet /> {/* Renderiza as sub-rotas */}
+                <div className="content-area">
+                    {isLoading && <div className="loading-overlay"><LoadingSpinner /></div>}
+                    <Outlet /> {/* Renderiza as sub-rotas */}
+                </div>
             </main>
         </div>
     );

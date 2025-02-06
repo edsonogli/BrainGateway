@@ -148,6 +148,50 @@
     font-size: 1rem;
 }
 
+.content-area {
+    position: relative;
+    flex: 1;
+    overflow: auto;
+    padding: 20px;
+    height: calc(100vh - 60px); /* Ajuste conforme a altura do seu header */
+}
+
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.absolute {
+    position: absolute;
+}
+
+.inset-0 {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.bg-white {
+    background-color: #ffffff;
+}
+
+.bg-opacity-70 {
+    background-opacity: 0.7;
+}
+
+.z-10 {
+    z-index: 10;
+}
+
 /* Responsivo */
 @media (max-width: 768px) {
     /* Menu Toggle Button */
