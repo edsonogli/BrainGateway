@@ -3,12 +3,14 @@ import React, { createContext, useContext, useState, useCallback } from 'react';
 import axios from 'axios';
 import { API_BASE_URL } from '../config';
 import { useAuth } from '../components/AuthContext';    
+import { useNavigate } from 'react-router-dom';
 
 const ApiContext = createContext();
 
 export const ApiProvider = ({ children }) => {
     const { setIsAuthenticated } = useAuth(); 
     const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
 
     // Configuração do Axios para incluir o token de autenticação em todas as requisições
     const api = axios.create({
@@ -23,6 +25,21 @@ export const ApiProvider = ({ children }) => {
         }
         return config;
     });
+
+    // Interceptor para tratar erros de resposta
+    api.interceptors.response.use(
+        (response) => response,
+        (error) => {
+            if (error.response?.status === 401) {
+                // Limpa o token e estado de autenticação
+                localStorage.removeItem('authToken');
+                setIsAuthenticated(false);
+                // Redireciona para a página de login
+                navigate('/login');
+            }
+            return Promise.reject(error);
+        }
+    );
 
     // Wrapper function to handle loading state
     const withLoading = useCallback(async (operation) => {
