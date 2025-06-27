@@ -80,6 +80,15 @@ const ProjectCreate = () => {
                     />
                 </label>
                 <label>
+                    WPP Service:
+                    <input
+                        type="text"
+                        name="wppService"
+                        value={project.wppService}
+                        onChange={handleChange}
+                    />
+                </label>
+                <label>
                     Ativo:
                     <select name="active" value={project.active} onChange={handleChange}>
                         <option value={true}>Sim</option>

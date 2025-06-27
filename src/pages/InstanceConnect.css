@@ -1,0 +1,78 @@
+.instance-connect-container {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.instance-connect-container h2 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+}
+
+.project-select,
+.instance-name-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.instance-name-input:focus {
+    outline: none;
+    border-color: #4CAF50;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.2);
+}
+
+.connect-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.connect-button:hover {
+    background-color: #45a049;
+}
+
+.connect-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.error-message {
+    color: #dc3545;
+    margin-top: 10px;
+}
+
+.qr-code-container {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.qr-code-container h3 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.qr-code-image {
+    max-width: 300px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

@@ -8,15 +8,35 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         const token = localStorage.getItem('authToken');
+        console.log('AuthContext - Verificando token:', token ? 'Presente' : 'Ausente');
+
         if (token) {
-            setIsAuthenticated(true); // Define como autenticado se o token existir
+            try {
+                // Verifica se o token está no formato correto
+                if (!token.startsWith('Bearer ')) {
+                    console.warn('Token sem prefixo Bearer, corrigindo...');
+                    const formattedToken = `Bearer ${token.trim()}`;
+                    localStorage.setItem('authToken', formattedToken);
+                }
+                setIsAuthenticated(true);
+                console.log('AuthContext - Autenticação confirmada');
+            } catch (error) {
+                console.error('AuthContext - Erro ao processar token:', error);
+                localStorage.removeItem('authToken');
+                setIsAuthenticated(false);
+            }
+        } else {
+            console.warn('AuthContext - Token não encontrado');
+            setIsAuthenticated(false);
         }
-        setIsLoading(false); // Carregamento concluído
+        setIsLoading(false);
     }, []);
 
     const logout = () => {
+        console.log('AuthContext - Realizando logout');
         localStorage.removeItem('authToken');
         setIsAuthenticated(false);
+        console.log('AuthContext - Logout concluído');
     };
 
     return (

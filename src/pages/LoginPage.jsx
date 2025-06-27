@@ -18,53 +18,67 @@ const LoginPage = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
+            console.log('Iniciando processo de login com:', credentials);
             await login(credentials);
-            navigate('/admin/dashboard'); // Redireciona para o dashboard após login
+            
+            // Verifica se o token foi salvo corretamente
+            const token = localStorage.getItem('authToken');
+            console.log('Token após login:', token ? 'Presente' : 'Ausente');
+            
+            if (!token) {
+                throw new Error('Token não foi salvo após login');
+            }
+            
+            navigate('/admin/dashboard');
         } catch (err) {
-            setError('Login failed. Please check your credentials.');
+            console.error('Erro durante login:', err);
+            setError(`Falha no login: ${err.message || 'Verifique suas credenciais'}`);
         }
     };
 
     return (
         <div className="login-container">
             <div className="login-welcome">
-                <h2>Novo Aqui?</h2>
-                <p>Entre em contato com um de nossos representantes para obter acesso ao sistema e desfrutar de seus benefícios</p>
-                <button className="signup-button">Enviar mensagem agora!</button>
+                <div className="welcome-content">
+                    <h1>Bem-vindo ao OChatPro</h1>
+                    <h2>Novo Aqui?</h2>
+                    <p>Entre em contato com um de nossos representantes para obter acesso ao sistema e desfrutar de seus benefícios</p>
+                    <a href="https://wa.me/5541996870967" target="_blank" rel="noopener noreferrer" className="whatsapp-button">
+                        <i className="whatsapp-icon">📱</i>
+                        Falar com Representante
+                    </a>
+                </div>
             </div>
             <div className="login-form">
-                <h2>Entrar</h2>
-                <form onSubmit={handleLogin}>
-                    <div className="input-container">
-                        <input
-                            type="email"
-                            name="email"
-                            value={credentials.email}
-                            onChange={handleChange}
-                            placeholder="Email"
-                            required
-                        />
-                    </div>
-                    <div className="input-container">
-                        <input
-                            type="password"
-                            name="password"
-                            value={credentials.password}
-                            onChange={handleChange}
-                            placeholder="Senha"
-                            required
-                        />
-                    </div>
-                    <button type="submit" className="login-button">Login</button>
-                </form>
-                {error && <p className="error-message">{error}</p>}
-                {/* <p className="social-text">Or Sign in with social platforms</p>
-                <div className="social-icons">
-                    <i className="fab fa-facebook"></i>
-                    <i className="fab fa-twitter"></i>
-                    <i className="fab fa-google"></i>
-                    <i className="fab fa-linkedin"></i>
-                </div> */}
+                <div className="form-container">
+                    <h2>Entrar</h2>
+                    <form onSubmit={handleLogin}>
+                        <div className="input-container">
+                            <i className="input-icon">📧</i>
+                            <input
+                                type="email"
+                                name="email"
+                                value={credentials.email}
+                                onChange={handleChange}
+                                placeholder="Email"
+                                required
+                            />
+                        </div>
+                        <div className="input-container">
+                            <i className="input-icon">🔒</i>
+                            <input
+                                type="password"
+                                name="password"
+                                value={credentials.password}
+                                onChange={handleChange}
+                                placeholder="Senha"
+                                required
+                            />
+                        </div>
+                        <button type="submit" className="login-button">Entrar</button>
+                    </form>
+                    {error && <p className="error-message">{error}</p>}
+                </div>
             </div>
         </div>
     );

@@ -1,10 +1,12 @@
 // src/pages/Contacts.jsx
 import React, { useEffect, useState } from 'react';
 import { useApi } from '../contexts/ApiContext';
+import { useNavigate } from 'react-router-dom';
 import './Instances.css';
 
 const Instances = () => {
-    const { getInstances } = useApi(); // Obtém a função getContacts do ApiContext
+    const { getInstances } = useApi();
+    const navigate = useNavigate();
     const [instances, setInstances] = useState([]);
     const [error, setError] = useState(null);
 

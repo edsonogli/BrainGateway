@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useApi } from '../contexts/ApiContext';
+import { debugError } from '../config';
 import './Contacts.css';
 
 const Contacts = () => {
@@ -14,13 +15,12 @@ const Contacts = () => {
             try {
                 const data = await getContacts();
                 setContacts(data);
-                setFilteredContacts(data); // Inicializa os contatos filtrados com todos os contatos
+                setFilteredContacts(data);
             } catch (err) {
                 setError('Failed to fetch contacts');
-                console.error(err);
+                debugError('Erro ao carregar contatos:', err);
             }
         };
-
         fetchContacts();
     }, [getContacts]);
 
@@ -46,7 +46,7 @@ const Contacts = () => {
             );
         } catch (err) {
             setError('Failed to inactivate contact');
-            console.error(err);
+            debugError('Erro ao inativar contato:', err);
         }
     };
 
@@ -60,7 +60,7 @@ const Contacts = () => {
             );
         } catch (err) {
             setError('Failed to activate contact');
-            console.error(err);
+            debugError('Erro ao ativar contato:', err);
         }
     };
 

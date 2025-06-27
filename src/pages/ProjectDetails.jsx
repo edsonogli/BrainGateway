@@ -86,6 +86,15 @@ const ProjectDetails = () => {
                     />
                 </label>
                 <label>
+                    WPP Service:
+                    <input
+                        type="text"
+                        name="wppService"
+                        value={project.wppService}
+                        onChange={handleChange}
+                    />
+                </label>
+                <label>
                     Ativo:
                     <select
                         name="active"

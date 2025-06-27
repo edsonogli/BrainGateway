@@ -1,63 +1,141 @@
-/* src/pages/Contacts.css */
+/* src/pages/Assistants.css */
 
-.contacts-container {
+.assistants-container {
     padding: 20px;
 }
 
-.contacts-container h2 {
+.assistants-container h2 {
     margin-bottom: 20px;
     color: #333;
 }
 
-.contacts-table {
-    width: 100%;
-    border-collapse: collapse;
+.assistants-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
     margin-top: 20px;
 }
 
-.contacts-table th, .contacts-table td {
+.assistant-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.assistant-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.assistant-header {
+    padding: 15px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #eee;
+}
+
+.assistant-header h3 {
+    margin: 0;
+    color: #2d6a4f;
+    font-size: 1.1rem;
+}
+
+.assistant-model {
+    font-size: 0.85rem;
+    color: #666;
+    display: block;
+    margin-top: 5px;
+}
+
+.assistant-content {
+    padding: 15px;
+}
+
+.assistant-instructions {
+    font-size: 0.9rem;
+    color: #444;
+    line-height: 1.5;
+    margin: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+}
+
+.assistant-footer {
+    padding: 15px;
+    background: #f8f9fa;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.edit-form textarea {
+    width: 100%;
     padding: 10px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    resize: vertical;
+    min-height: 150px;
 }
 
-.contacts-table th {
-    background-color: #f8f9fa;
-    color: #333;
-    font-weight: bold;
+.edit-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
 }
 
-.contacts-table tr:hover {
-    background-color: #f1f1f1;
-}
-
-.inactivate-button {
-    background-color: #ff4d4d;
-    color: white;
+.edit-button, .save-button, .cancel-button {
+    padding: 8px 16px;
+    border-radius: 6px;
     border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
 }
 
-.activate-button {
-    background-color: #149233;
+.edit-button {
+    background-color: #2d6a4f;
     color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+    margin-top: 10px;
 }
-.inactivate-button:hover {
-    background-color: #e60000;
+
+.save-button {
+    background-color: #2d6a4f;
+    color: white;
 }
-.activate-button:hover {
-    background-color: #149233;
+
+.cancel-button {
+    background-color: #dc3545;
+    color: white;
+}
+
+.edit-button:hover {
+    background-color: #40916c;
+}
+
+.save-button:hover {
+    background-color: #40916c;
+}
+
+.cancel-button:hover {
+    background-color: #c82333;
 }
 
 .error-message {
-    color: red;
+    color: #dc3545;
     margin-top: 10px;
+    padding: 10px;
+    background-color: #f8d7da;
+    border-radius: 6px;
+    text-align: center;
 }
