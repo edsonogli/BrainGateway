@@ -13,7 +13,9 @@ const Notifications = () => {
         mediaFile: '',
         audioFile: '',
         regex: '',
-        active: true
+        active: true,
+        afterDays: 0,
+        name: ''
     });
     const [editingId, setEditingId] = useState(null);
     const { getNotifications, createNotification, deleteNotification, updateNotification } = useApi();
@@ -69,7 +71,9 @@ const Notifications = () => {
                 mediaFile: '',
                 audioFile: '',
                 regex: '',
-                active: true
+                active: true,
+                afterDays: 0,
+                name: ''
             });
         } catch (err) {
             console.error('Erro ao salvar notificação:', err);
@@ -85,7 +89,9 @@ const Notifications = () => {
             mediaFile: notification.mediaFile || '',
             audioFile: notification.audioFile || '',
             regex: notification.regex || '',
-            active: notification.active
+            active: notification.active,
+            afterDays: notification.afterDays || 0,
+            name: notification.name || ''
         });
         setEditingId(notification.id);
     };
@@ -107,6 +113,18 @@ const Notifications = () => {
             
             <form onSubmit={handleUpdate} className="notification-form">
                 <div className="form-group">
+                    <label htmlFor="name">Nome</label>
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        required
+                    />
+                </div>
+
+                <div className="form-group">
                     <label htmlFor="type">Tipo</label>
                     <input
                         type="number"
@@ -125,6 +143,18 @@ const Notifications = () => {
                         id="projectId"
                         name="projectId"
                         value={formData.projectId}
+                        onChange={handleInputChange}
+                        required
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="afterDays">Dias Após</label>
+                    <input
+                        type="number"
+                        id="afterDays"
+                        name="afterDays"
+                        value={formData.afterDays}
                         onChange={handleInputChange}
                         required
                     />
@@ -210,6 +240,8 @@ const Notifications = () => {
                                 {notification.mediaFile && <p><strong>Arquivo de Mídia:</strong> {notification.mediaFile}</p>}
                                 {notification.audioFile && <p><strong>Arquivo de Áudio:</strong> {notification.audioFile}</p>}
                                 {notification.regex && <p><strong>Regex:</strong> {notification.regex}</p>}
+                                <p><strong>Nome:</strong> {notification.name || 'Sem nome'}</p>
+                                <p><strong>Dias Após:</strong> {notification.afterDays || 0}</p>
                             </div>
                             <div className="notification-footer">
                                 <span className="timestamp">

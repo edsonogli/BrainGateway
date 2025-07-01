@@ -1,46 +1,84 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { debugLog, debugError } from '../config';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [isLoading, setIsLoading] = useState(true); // Novo estado para controlar carregamento
+    const [isLoading, setIsLoading] = useState(true);
+    const [userData, setUserData] = useState(null);
 
     useEffect(() => {
-        const token = localStorage.getItem('authToken');
-        console.log('AuthContext - Verificando token:', token ? 'Presente' : 'Ausente');
-
-        if (token) {
+        const checkAuth = () => {
             try {
-                // Verifica se o token está no formato correto
-                if (!token.startsWith('Bearer ')) {
-                    console.warn('Token sem prefixo Bearer, corrigindo...');
-                    const formattedToken = `Bearer ${token.trim()}`;
-                    localStorage.setItem('authToken', formattedToken);
+                const token = localStorage.getItem('authToken');
+                const storedUserData = localStorage.getItem('userData');
+                
+                debugLog('AuthContext - Verificando autenticação:', {
+                    hasToken: !!token,
+                    hasUserData: !!storedUserData
+                });
+
+                if (token) {
+                    // Verifica se o token está no formato correto
+                    if (!token.startsWith('Bearer ')) {
+                        debugLog('AuthContext - Corrigindo formato do token');
+                        const formattedToken = `Bearer ${token.trim()}`;
+                        localStorage.setItem('authToken', formattedToken);
+                    }
+
+                    // Verifica e carrega os dados do usuário
+                    if (storedUserData) {
+                        try {
+                            const parsedUserData = JSON.parse(storedUserData);
+                            setUserData(parsedUserData);
+                            debugLog('AuthContext - Dados do usuário carregados');
+                        } catch (error) {
+                            debugError('AuthContext - Erro ao processar dados do usuário:', error);
+                            localStorage.removeItem('userData');
+                        }
+                    }
+
+                    setIsAuthenticated(true);
+                    debugLog('AuthContext - Autenticação confirmada');
+                } else {
+                    debugLog('AuthContext - Token não encontrado');
+                    setIsAuthenticated(false);
+                    setUserData(null);
+                    localStorage.removeItem('userData');
                 }
-                setIsAuthenticated(true);
-                console.log('AuthContext - Autenticação confirmada');
             } catch (error) {
-                console.error('AuthContext - Erro ao processar token:', error);
-                localStorage.removeItem('authToken');
+                debugError('AuthContext - Erro ao verificar autenticação:', error);
                 setIsAuthenticated(false);
+                setUserData(null);
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('userData');
+            } finally {
+                setIsLoading(false);
             }
-        } else {
-            console.warn('AuthContext - Token não encontrado');
-            setIsAuthenticated(false);
-        }
-        setIsLoading(false);
+        };
+
+        checkAuth();
     }, []);
 
     const logout = () => {
-        console.log('AuthContext - Realizando logout');
+        debugLog('AuthContext - Iniciando processo de logout');
         localStorage.removeItem('authToken');
+        localStorage.removeItem('userData');
         setIsAuthenticated(false);
-        console.log('AuthContext - Logout concluído');
+        setUserData(null);
+        debugLog('AuthContext - Logout concluído');
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, isLoading, setIsAuthenticated, logout }}>
+        <AuthContext.Provider value={{ 
+            isAuthenticated, 
+            isLoading, 
+            userData,
+            setIsAuthenticated, 
+            setUserData,
+            logout 
+        }}>
             {children}
         </AuthContext.Provider>
     );

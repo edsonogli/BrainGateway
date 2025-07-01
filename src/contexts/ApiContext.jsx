@@ -64,6 +64,7 @@ export const ApiProvider = ({ children }) => {
             if (error.response?.status === 401) {
                 // Limpa o token e estado de autenticação
                 localStorage.removeItem('authToken');
+                localStorage.removeItem('userData');
                 setIsAuthenticated(false);
                 // Redireciona para a página de login
                 navigate('/login');
@@ -100,6 +101,15 @@ export const ApiProvider = ({ children }) => {
                 }
                 debugLog('Token extraído:', token);
                 localStorage.setItem('authToken', token);
+                
+                // Armazena os dados do usuário
+                const userData = {
+                    userId: response.data.userId,
+                    username: response.data.username,
+                    isAdmin: response.data.isAdmin
+                };
+                localStorage.setItem('userData', JSON.stringify(userData));
+                
                 setIsAuthenticated(true);
             } else {
                 debugError('Token não encontrado na resposta:', response.data);
@@ -138,7 +148,7 @@ export const ApiProvider = ({ children }) => {
     [withLoading]);
 
     const createProject = useCallback((projectData) => 
-        withLoading(() => api.post('/projects', projectData).then(response => response.data)),
+        withLoading(() => api.post('/Brain/Project', projectData).then(response => response.data)),
     [withLoading]);
 
     const getLogs = useCallback(() => 
@@ -161,7 +171,20 @@ export const ApiProvider = ({ children }) => {
     [withLoading]);
 
     const getChats = useCallback(() => 
-        withLoading(() => api.get('/Brain/Chats').then(response => response.data)),
+        withLoading(async () => {
+            try {
+                const response = await api.get('/Brain/Chats');
+                debugLog('Chats recebidos:', response.data);
+                return response.data;
+            } catch (error) {
+                debugError('Erro ao buscar chats:', error);
+                throw error;
+            }
+        }),
+    [withLoading]);
+
+    const getChatsControlLog = useCallback((number) => 
+        withLoading(() => api.get(`/Brain/ChatsControlLog?number=${number}`).then(response => response.data)),
     [withLoading]);
 
     const connectInstance = useCallback(({ projectId, instanceName }) => 
@@ -218,6 +241,7 @@ export const ApiProvider = ({ children }) => {
         updateAssistant,
         getInstances,
         getChats,
+        getChatsControlLog,
         connectInstance,
         getNotifications,
         createNotification,
