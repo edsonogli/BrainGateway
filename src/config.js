@@ -29,7 +29,7 @@ export const checkApiConnection = async () => {
 
         const formattedToken = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
 
-        const response = await fetch(API_BASE_URL + '/Brain/Chats', {
+        const response = await fetch(API_BASE_URL + '/Brain/Projects', {
             headers: {
                 'Authorization': formattedToken
             }

@@ -5,21 +5,43 @@ import { debugLog, debugError, checkApiConnection } from '../config';
 import './Chats.css';
 
 const Chats = () => {
-    const { getChats, getContacts, InativeContact, AtiveContact, getChatsControlLog } = useApi();
+    const { getChats, getContacts, InativeContact, AtiveContact, getChatsControlLog, getProjects, getChatsNumbers } = useApi();
     const { isAuthenticated, isLoading: authLoading, userData } = useAuth();
     const [chats, setChats] = useState([]);
     const [groupedChats, setGroupedChats] = useState([]);
     const [filteredChats, setFilteredChats] = useState([]);
     const [selectedNumber, setSelectedNumber] = useState(null);
     const [error, setError] = useState(null);
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [contacts, setContacts] = useState([]);
     const [showActiveOnly, setShowActiveOnly] = useState(false);
     const [controlLogs, setControlLogs] = useState([]);
     const [showLogs, setShowLogs] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [projects, setProjects] = useState([]);
+    const [selectedProject, setSelectedProject] = useState(null);
+    const [chatNumbers, setChatNumbers] = useState([]);
     const messagesEndRef = useRef(null);
+
+    const formatPhoneNumber = (number) => {
+        // Remove todos os caracteres não numéricos
+        const cleanNumber = number.replace(/\D/g, '');
+        
+        // Verifica se é um número brasileiro com 8 ou 9 dígitos no número de telefone
+        if (cleanNumber.length >= 10 && cleanNumber.length <= 11) {
+            const ddd = cleanNumber.slice(0, 2);
+            const phoneNumber = cleanNumber.slice(2);
+            
+            // Formata o número de telefone com 8 ou 9 dígitos
+            const formattedPhone = phoneNumber.length === 8
+                ? `${phoneNumber.slice(0, 4)}-${phoneNumber.slice(4)}`
+                : `${phoneNumber.slice(0, 5)}-${phoneNumber.slice(5)}`;
+            
+            return `+55 ${ddd} ${formattedPhone}`;
+        }
+        
+        return number; // Retorna o número original se não corresponder ao formato esperado
+    };
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -30,6 +52,36 @@ const Chats = () => {
             scrollToBottom();
         }
     }, [selectedNumber, groupedChats]);
+
+    useEffect(() => {
+        const fetchProjects = async () => {
+            if (userData?.isAdmin) {
+                try {
+                    const projectsData = await getProjects();
+                    setProjects(projectsData);
+                } catch (err) {
+                    debugError('Erro ao buscar projetos:', err);
+                    setError('Falha ao carregar os projetos');
+                }
+            }
+        };
+        fetchProjects();
+    }, [userData, getProjects]);
+
+    useEffect(() => {
+        const fetchChatNumbers = async () => {
+            if (selectedProject) {
+                try {
+                    const numbers = await getChatsNumbers(selectedProject);
+                    setChatNumbers(numbers);
+                } catch (err) {
+                    debugError('Erro ao buscar números:', err);
+                    setError('Falha ao carregar os números de chat');
+                }
+            }
+        };
+        fetchChatNumbers();
+    }, [selectedProject, getChatsNumbers]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -51,60 +103,24 @@ const Chats = () => {
                     throw new Error('Não foi possível conectar à API');
                 }
 
-                debugLog('Iniciando busca de dados...', { userId: userData?.userId });
-                const [chatsData, contactsData] = await Promise.all([
-                    getChats(),
-                    getContacts()
+                debugLog('Iniciando busca de dados...');
+                const [contactsData, numbers] = await Promise.all([
+                    getContacts(),
+                    !userData?.isAdmin ? getChatsNumbers() : Promise.resolve([])
                 ]);
                 
                 debugLog('Dados recebidos:', { 
-                    chatsCount: Array.isArray(chatsData) ? chatsData.length : 'não é um array',
                     contactsCount: Array.isArray(contactsData) ? contactsData.length : 'não é um array'
                 });
                 
-                if (Array.isArray(chatsData) && chatsData.length > 0) {
-                    debugLog('Processando dados de chat...');
-                    setChats(chatsData);
-                    setContacts(contactsData);
-
-                    const grouped = Object.entries(
-                        chatsData.reduce((acc, chat) => {
-                            if (!acc[chat.number]) {
-                                acc[chat.number] = [];
-                            }
-                            acc[chat.number].push(chat);
-                            return acc;
-                        }, {})
-                    ).map(([number, messages]) => {
-                        const contact = contactsData.find(c => c.number === number);
-                        const sortedMessages = messages.sort(
-                            (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
-                        );
-                        
-                        return {
-                            number,
-                            messages: sortedMessages,
-                            lastMessage: sortedMessages[sortedMessages.length - 1],
-                            lastMessageTime: new Date(sortedMessages[sortedMessages.length - 1].createdAt),
-                            isActive: contact ? contact.active : true,
-                            contactId: contact ? contact.id : null
-                        };
-                    });
-
-                    grouped.sort((a, b) => b.lastMessageTime - a.lastMessageTime);
-                    debugLog('Conversas agrupadas:', grouped.length);
-                    setGroupedChats(grouped);
-                    setFilteredChats(grouped);
-                    setError(null);
-                } else {
-                    debugError('Nenhuma conversa encontrada ou dados inválidos:', chatsData);
-                    setGroupedChats([]);
-                    setFilteredChats([]);
-                    setError('Nenhuma conversa encontrada');
+                setContacts(contactsData);
+                if (!userData?.isAdmin && numbers.length > 0) {
+                    setChatNumbers(numbers);
                 }
+                setError(null);
             } catch (err) {
                 debugError('Erro ao buscar dados:', err);
-                setError(err.message || 'Falha ao carregar as conversas');
+                setError(err.message || 'Falha ao carregar os dados');
                 setGroupedChats([]);
                 setFilteredChats([]);
             } finally {
@@ -113,23 +129,55 @@ const Chats = () => {
         };
 
         fetchData();
-    }, [getChats, getContacts, isAuthenticated, authLoading, userData]);
+    }, [getContacts, getChatsNumbers, isAuthenticated, authLoading, userData]);
 
-    useEffect(() => {
-        debugLog('Atualizando filtros:', { searchTerm, showActiveOnly, groupedChats: groupedChats.length });
-        const filtered = groupedChats.filter(chat =>
-            chat.number.toLowerCase().includes(searchTerm.toLowerCase()) &&
-            (!showActiveOnly || chat.isActive)
-        );
-        debugLog('Conversas filtradas:', filtered.length);
-        setFilteredChats(filtered);
-    }, [searchTerm, groupedChats, showActiveOnly]);
-
-    const handleNumberClick = (number) => {
+    const handleNumberClick = async (number) => {
         setSelectedNumber(number);
-        setIsMobileMenuOpen(false);
         setShowLogs(false);
         setControlLogs([]);
+
+        try {
+            setIsLoading(true);
+            const chatsData = await getChats(number, userData?.isAdmin ? selectedProject : undefined);
+            
+            if (Array.isArray(chatsData) && chatsData.length > 0) {
+                const contact = contacts.find(c => c.number === number);
+                const sortedMessages = chatsData.sort(
+                    (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+                );
+                
+                const chatGroup = {
+                    number,
+                    messages: sortedMessages,
+                    lastMessage: sortedMessages[sortedMessages.length - 1],
+                    lastMessageTime: new Date(sortedMessages[sortedMessages.length - 1].createdAt),
+                    isActive: contact ? contact.active : true,
+                    contactId: contact ? contact.id : null
+                };
+
+                setGroupedChats([chatGroup]);
+                setFilteredChats([chatGroup]);
+                setError(null);
+            } else {
+                setGroupedChats([]);
+                setFilteredChats([]);
+                setError('Nenhuma mensagem encontrada');
+            }
+        } catch (err) {
+            debugError('Erro ao buscar mensagens:', err);
+            setError(err.message || 'Falha ao carregar as mensagens');
+            setGroupedChats([]);
+            setFilteredChats([]);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleProjectChange = (projectId) => {
+        setSelectedProject(projectId);
+        setSelectedNumber(null);
+        setGroupedChats([]);
+        setFilteredChats([]);
     };
 
     const handleToggleActive = async (contactId, isActive) => {
@@ -204,17 +252,24 @@ const Chats = () => {
 
     return (
         <div className="chats-page">
-            <button 
-                className="toggle-menu" 
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                aria-label="Toggle contacts menu"
-            >
-                ☰
-            </button>
-
-            <div className={`contacts-sidebar ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
+            <div className="contacts-sidebar">
                 <div className="sidebar-header">
                     <h3>Conversas</h3>
+                    {userData?.isAdmin && (
+                        <div className="project-selector">
+                            <select
+                                value={selectedProject || ''}
+                                onChange={(e) => handleProjectChange(e.target.value)}
+                            >
+                                <option value="">Selecione um projeto</option>
+                                {projects.map(project => (
+                                    <option key={project.id} value={project.projectId}>
+                                        {project.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
                     <div className="search-box">
                         <input
                             type="text"
@@ -235,19 +290,37 @@ const Chats = () => {
                 <ul>
                     {isLoading ? (
                         <li className="loading">Carregando conversas...</li>
-                    ) : filteredChats.length > 0 ? (
-                        filteredChats.map(({ number, lastMessage, isActive }) => (
+                    ) : userData?.isAdmin && selectedProject ? (
+                        chatNumbers.length > 0 ? (
+                            chatNumbers.map(number => (
+                                <li
+                                    key={number}
+                                    className={`contact ${selectedNumber === number ? 'active' : ''}`}
+                                    onClick={() => handleNumberClick(number)}
+                                >
+                                    <div className="contact-avatar">
+                                        {number.slice(-2)}
+                                    </div>
+                                    <div className="contact-info">
+                                        <div className="contact-number">{formatPhoneNumber(number)}</div>
+                                    </div>
+                                </li>
+                            ))
+                        ) : (
+                            <li className="no-chats">Nenhum número encontrado para este projeto</li>
+                        )
+                    ) : chatNumbers.length > 0 ? (
+                        chatNumbers.map(number => (
                             <li
                                 key={number}
-                                className={`contact ${selectedNumber === number ? 'active' : ''} ${!isActive ? 'inactive' : ''}`}
+                                className={`contact ${selectedNumber === number ? 'active' : ''}`}
                                 onClick={() => handleNumberClick(number)}
                             >
+                                <div className="contact-avatar">
+                                    {number.slice(-2)}
+                                </div>
                                 <div className="contact-info">
-                                    <div className="contact-number">{number}</div>
-                                    <div className="contact-preview">
-                                        {lastMessage?.message.substring(0, 40)}
-                                        {lastMessage?.message.length > 40 ? '...' : ''}
-                                    </div>
+                                    <div className="contact-number">{formatPhoneNumber(number)}</div>
                                 </div>
                             </li>
                         ))
@@ -261,7 +334,7 @@ const Chats = () => {
                 {selectedNumber ? (
                     <>
                         <div className="chat-panel-header">
-                            <span>{selectedNumber}</span>
+                            <span>{formatPhoneNumber(selectedNumber)}</span>
                             <div className="header-actions">
                                 {groupedChats.find((chat) => chat.number === selectedNumber)?.contactId && (
                                     <button

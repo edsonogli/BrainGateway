@@ -1,460 +1,198 @@
+* {
+  box-sizing: border-box;
+}
+
 .schedules-container {
-    padding: 20px;
-    max-width: 1400px;
-    margin: 0 auto;
-    height: calc(100vh - 80px);
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  overflow-y: auto;
 }
 
 .schedules-header {
-    margin-bottom: 20px;
+  padding: 20px;
 }
 
 .schedules-header h2 {
-    margin-bottom: 15px;
-    color: #333;
+  margin-bottom: 15px;
+  color: #333;
 }
 
 .tab-buttons {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 .tab-button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    background-color: #f0f0f0;
-    color: #666;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 14px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #f0f0f0;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
 }
 
 .tab-button:hover {
-    background-color: #e0e0e0;
+  background-color: #e0e0e0;
 }
 
 .tab-button.active {
-    background-color: #1976d2;
-    color: white;
+  background-color: #1a4332;
+  color: white;
 }
 
 .schedules-content {
-    background: white;
-    border-radius: 10px;
-    padding: 20px;
-    flex: 1;
-    overflow: auto;
+  flex: 1;
+  width: 100%;
+  padding: 0 40px;
+  overflow-y: auto;
 }
 
-/* Estilos do formulário */
 .form-section {
-    background: #f8f9fa;
-    padding: 20px;
-    border-radius: 10px;
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.form-group {
-    margin-bottom: 15px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
-    color: #333;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
-}
-
-.form-actions {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-    margin-top: 20px;
-}
-
-.submit-button,
-.cancel-button {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.2s ease;
-}
-
-.submit-button {
-    background-color: #1976d2;
-    color: white;
-}
-
-.submit-button:hover {
-    background-color: #1565c0;
-}
-
-.cancel-button {
-    background-color: #f44336;
-    color: white;
-}
-
-.cancel-button:hover {
-    background-color: #d32f2f;
-}
-
-/* Estilos da lista */
-.schedules-list {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.schedule-item {
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 15px;
-    transition: box-shadow 0.3s ease;
-}
-
-.schedule-item:hover {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.schedule-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.schedule-title {
-    font-weight: 500;
-    color: #333;
-}
-
-.schedule-actions {
-    display: flex;
-    gap: 8px;
-}
-
-.edit-button,
-.delete-button {
-    padding: 4px 8px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 12px;
-    transition: background-color 0.2s ease;
-}
-
-.edit-button {
-    background-color: #2196f3;
-    color: white;
-}
-
-.edit-button:hover {
-    background-color: #1976d2;
-}
-
-.delete-button {
-    background-color: #f44336;
-    color: white;
-}
-
-.delete-button:hover {
-    background-color: #d32f2f;
-}
-
-.filters-container {
-    background-color: #f8f9fa;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-}
-
-.filters-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-}
-
-.filter-group {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.filter-group label {
-    font-size: 14px;
-    color: #666;
-}
-
-.filter-group select,
-.filter-group input {
-    padding: 6px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
-}
-
-.status {
-    display: inline-block;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: 500;
-}
-
-.status.executed {
-    background-color: #e8f5e9;
-    color: #2e7d32;
-}
-
-.status.pending {
-    background-color: #fff3e0;
-    color: #e65100;
-}
-
-.status.error {
-    background-color: #ffebee;
-    color: #c62828;
-}
-
-.schedule-content {
-    margin: 15px 0;
-}
-
-.schedule-content p {
-    margin: 5px 0;
-    color: #666;
-    font-size: 14px;
+  width: 100%;
 }
 
 .schedule-form {
-    background-color: #ffffff;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin-bottom: 30px;
+  width: 100%;
+  padding: 40px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .form-group {
-    margin-bottom: 20px;
+  margin-bottom: 24px;
+  width: 100%;
 }
 
 .form-group label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
-    color: #333;
-    font-weight: 500;
+  display: block;
+  margin-bottom: 8px;
+  color: #333;
+  font-weight: 500;
 }
 
 .form-group input[type="text"],
 .form-group input[type="number"],
 .form-group input[type="datetime-local"],
 .form-group textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
 }
 
 .form-group textarea {
-    min-height: 100px;
-    resize: vertical;
+  min-height: 120px;
+  resize: vertical;
 }
 
-.form-group input[type="checkbox"] {
-    width: auto;
-    margin-right: 8px;
+.form-actions {
+  margin-top: 24px;
+  display: flex;
+  gap: 12px;
+}
+
+.submit-button,
+.cancel-button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 .submit-button {
-    background-color: #1976d2;
-    color: white;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: background-color 0.2s ease;
+  background-color: #1a4332;
+  color: white;
 }
 
 .submit-button:hover {
-    background-color: #1565c0;
+  background-color: #2c5446;
 }
 
-.schedules-section {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    overflow: auto;
+.cancel-button {
+  background-color: #e0e0e0;
+  color: #333;
 }
 
-.filters-container {
-    background-color: #f8f9fa;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
+.cancel-button:hover {
+  background-color: #d0d0d0;
 }
 
-.filter-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.filter-group label {
-    font-weight: 500;
-    color: #333;
-}
-
-.filter-group input,
-.filter-group select {
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 0.9rem;
-}
-
-.filter-group select {
-    background-color: white;
-}
-
+/* Estilos para a lista de agendamentos */
 .schedules-list {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .schedule-card {
-    background-color: #ffffff;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease;
-}
-
-.schedule-card:hover {
-    transform: translateY(-2px);
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .schedule-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
 }
 
 .schedule-header h3 {
-    margin: 0;
-    color: #333;
-    font-size: 1.2rem;
-}
-
-.schedule-status {
-    display: flex;
-    gap: 10px;
-}
-
-.status {
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.9rem;
-    font-weight: 500;
-}
-
-.status.executed {
-    background-color: #e8f5e9;
-    color: #2e7d32;
-}
-
-.status.pending {
-    background-color: #fff3e0;
-    color: #e65100;
-}
-
-.status.error {
-    background-color: #ffebee;
-    color: #c62828;
+  margin: 0;
+  color: #333;
+  font-size: 1.2rem;
 }
 
 .schedule-content {
-    margin: 15px 0;
+  margin: 15px 0;
 }
 
 .schedule-content p {
-    margin: 8px 0;
-}
-
-.schedule-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 15px;
-}
-
-.timestamp {
-    color: #666;
-    font-size: 0.9rem;
+  margin: 8px 0;
+  color: #666;
+  font-size: 14px;
 }
 
 .schedule-actions {
-    display: flex;
-    gap: 10px;
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
 }
 
 .action-button {
-    padding: 6px 12px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: background-color 0.2s ease;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
 }
 
 .action-button.edit {
-    background-color: #e3f2fd;
-    color: #1976d2;
+  background-color: #e3f2fd;
+  color: #1976d2;
 }
 
 .action-button.edit:hover {
-    background-color: #bbdefb;
+  background-color: #bbdefb;
 }
 
 .action-button.delete {
-    background-color: #ffebee;
-    color: #c62828;
+  background-color: #ffebee;
+  color: #c62828;
 }
 
 .action-button.delete:hover {
-    background-color: #ffcdd2;
-}
-
-.error-message {
-    color: #c62828;
-    background-color: #ffebee;
-    padding: 10px;
-    border-radius: 4px;
-    margin-bottom: 20px;
+  background-color: #ffcdd2;
 }

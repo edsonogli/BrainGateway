@@ -170,10 +170,11 @@ export const ApiProvider = ({ children }) => {
         withLoading(() => api.get('/Wpp/Instances').then(response => response.data)),
     [withLoading]);
 
-    const getChats = useCallback(() => 
+    const getChats = useCallback((number, projectId) => 
         withLoading(async () => {
             try {
-                const response = await api.get('/Brain/Chats');
+                const url = projectId ? `/Brain/Chats?number=${number}&projectId=${projectId}` : `/Brain/Chats?number=${number}`;
+                const response = await api.get(url);
                 debugLog('Chats recebidos:', response.data);
                 return response.data;
             } catch (error) {
@@ -227,6 +228,13 @@ export const ApiProvider = ({ children }) => {
         withLoading(() => api.get('/Dashboard', { headers: { accept: 'text/plain' } }).then(response => response.data)),
     [withLoading]);
 
+    const getChatsNumbers = useCallback((projectId) => 
+        withLoading(() => {
+            const url = projectId ? `/Brain/ChatsNumbers?projectId=${projectId}` : '/Brain/ChatsNumbers';
+            return api.get(url).then(response => response.data);
+        }),
+    [withLoading]);
+
     const value = {
         login,
         getContacts,
@@ -241,6 +249,7 @@ export const ApiProvider = ({ children }) => {
         updateAssistant,
         getInstances,
         getChats,
+        getChatsNumbers,
         getChatsControlLog,
         connectInstance,
         getNotifications,
