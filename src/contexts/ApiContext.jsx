@@ -173,7 +173,7 @@ export const ApiProvider = ({ children }) => {
     const getChats = useCallback((number, projectId) => 
         withLoading(async () => {
             try {
-                const url = projectId ? `/Brain/Chats?number=${number}&projectId=${projectId}` : `/Brain/Chats?number=${number}`;
+                const url = projectId ? `/Brain/ChatsByNumber?number=${number}&projectId=${projectId}` : `/Brain/ChatsByNumber?number=${number}`;
                 const response = await api.get(url);
                 debugLog('Chats recebidos:', response.data);
                 return response.data;
@@ -230,7 +230,7 @@ export const ApiProvider = ({ children }) => {
 
     const getChatsNumbers = useCallback((projectId) => 
         withLoading(() => {
-            const url = projectId ? `/Brain/ChatsNumbers?projectId=${projectId}` : '/Brain/ChatsNumbers';
+            const url = projectId ? `/Brain/Numbers?projectId=${projectId}` : '/Brain/Numbers';
             return api.get(url).then(response => response.data);
         }),
     [withLoading]);

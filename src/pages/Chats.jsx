@@ -143,14 +143,15 @@ const Chats = () => {
             if (Array.isArray(chatsData) && chatsData.length > 0) {
                 const contact = contacts.find(c => c.number === number);
                 const sortedMessages = chatsData.sort(
-                    (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+                    (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
                 );
-                
+
+
                 const chatGroup = {
                     number,
                     messages: sortedMessages,
                     lastMessage: sortedMessages[sortedMessages.length - 1],
-                    lastMessageTime: new Date(sortedMessages[sortedMessages.length - 1].createdAt),
+                    lastMessageTime: new Date(sortedMessages[sortedMessages.length - 1].timestamp),
                     isActive: contact ? contact.active : true,
                     contactId: contact ? contact.id : null
                 };
@@ -222,12 +223,32 @@ const Chats = () => {
             setError('Falha ao carregar o histórico de logs');
         }
     };
+    const normalizeTimestamp = (raw) => {
+        if (!raw) return null;
 
-    const formatMessageTime = (date) => {
-        const messageDate = new Date(date);
-        return messageDate.toLocaleString('pt-BR', { 
-            day: '2-digit', 
-            month: '2-digit', 
+        if (typeof raw === 'string') {
+            return raw; // já é ISO
+        }
+
+        if (typeof raw === 'object' && raw.$date) {
+            return raw.$date; // vem do Mongo
+        }
+
+        return null;
+    };
+
+    const formatMessageTime = (raw) => {
+        if (!raw) return '-';
+
+        const dt = new Date(raw);
+        if (isNaN(dt.getTime())) {
+            console.error('Data inválida:', raw);
+            return '-';
+        }
+
+        return dt.toLocaleString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
             year: '2-digit',
             hour: '2-digit',
             minute: '2-digit'
@@ -362,11 +383,45 @@ const Chats = () => {
                                     ?.messages.map((msg, index) => (
                                         <div
                                             key={index}
-                                            className={`message ${msg.fromMe ? 'sent' : 'received'}`}
+                                            className={`message ${msg.fromMe ? 'sent' : 'received'} ${msg.ia ? 'ia-message' : ''}`}
                                         >
-                                            <p>{msg.message}</p>
+                                            {msg.imagemUrl && (
+                                                <div className="message-image">
+                                                    <img
+                                                    src={msg.imagemUrl}
+                                                    alt="Imagem da mensagem"
+                                                    onError={(e) => {
+                                                        e.target.style.display = 'none';
+                                                        const fallback = e.target.nextSibling;
+                                                        if (fallback) fallback.style.display = 'block';
+                                                    }}
+                                                    style={{ maxWidth: '100%', borderRadius: '8px' }}
+                                                    />
+                                                    <div style={{ display: 'none', color: '#888' }}>
+                                                    📷 Imagem não pôde ser carregada
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {msg.audioUrl && (
+                                                <div className="message-audio">
+                                                    <audio controls onError={(e) => {
+                                                    // Se der erro, esconde o player e mostra texto alternativo
+                                                    e.target.style.display = 'none';
+                                                    const fallback = e.target.nextSibling;
+                                                    if (fallback) fallback.style.display = 'block';
+                                                    }}>
+                                                    <source src={msg.audioUrl} type="audio/mpeg" />
+                                                    Seu navegador não suporta o elemento de áudio.
+                                                    </audio>
+                                                    <div style={{ display: 'none', color: '#888' }}>
+                                                    🎵 Mensagem de áudio recebida
+                                                    </div>
+                                                </div>
+                                                )}
+                                            <p>{msg.text}</p>
+                                            {msg.ia && <span className="ia-badge">🤖 IA</span>}
                                             <span className="timestamp">
-                                                {formatMessageTime(msg.createdAt)}
+                                                {formatMessageTime(msg.timestamp)}
                                             </span>
                                         </div>
                                     ))}
