@@ -21,7 +21,27 @@ const Chats = () => {
     const [projects, setProjects] = useState([]);
     const [selectedProject, setSelectedProject] = useState(null);
     const [chatNumbers, setChatNumbers] = useState([]);
+    const [newMessage, setNewMessage] = useState('');
     const messagesEndRef = useRef(null);
+    const { sendMessage } = useApi();
+    const handleSendMessage = async () => {
+        if (!newMessage.trim()) return;
+
+        try {
+            await sendMessage({
+            number: selectedNumber,
+            message: newMessage
+            });
+
+            setNewMessage('');
+            await handleNumberClick(selectedNumber); // recarrega a conversa
+            scrollToBottom();
+        } catch (error) {
+            console.error('Erro ao enviar mensagem:', error);
+            setError('Falha ao enviar a mensagem');
+        }
+    };
+
 
     const formatPhoneNumber = (number) => {
         // Remove todos os caracteres não numéricos
@@ -427,6 +447,21 @@ const Chats = () => {
                                     ))}
                                 <div ref={messagesEndRef} />
                             </div>
+                            <div className="chat-input-container">
+                                <input
+                                    type="text"
+                                    placeholder="Digite uma mensagem..."
+                                    value={newMessage}
+                                    onChange={(e) => setNewMessage(e.target.value)}
+                                    onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        handleSendMessage();
+                                    }
+                                    }}
+                                />
+                                <button onClick={handleSendMessage}>Enviar</button>
+                                </div>
+
                         </div>
                         {showLogs && (
                             <div className="modal-overlay">

@@ -184,6 +184,25 @@ export const ApiProvider = ({ children }) => {
         }),
     [withLoading]);
 
+    const sendMessage = async ({ number, message }) => {
+        try {
+            const response = await api.post('/Wpp/SendMessage', {
+                number,
+                message
+            });
+
+            if (!response.ok) {
+            throw new Error('Erro ao enviar a mensagem');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Erro em sendMessage:', error);
+            throw error;
+        }
+    };
+
+
     const getChatsControlLog = useCallback((number) => 
         withLoading(() => api.get(`/Brain/ChatsControlLog?number=${number}`).then(response => response.data)),
     [withLoading]);
@@ -261,6 +280,7 @@ export const ApiProvider = ({ children }) => {
         updateSchedule,
         deleteSchedule,
         getDashboard,
+        sendMessage,
         isLoading
     };
 

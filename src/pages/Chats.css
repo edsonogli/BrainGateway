@@ -346,6 +346,32 @@
     color: #667781;
 }
 
+.chat-input-container {
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+  background-color: #f9f9f9;
+}
+
+.chat-input-container input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  outline: none;
+  margin-right: 10px;
+}
+
+.chat-input-container button {
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: none;
+  background-color: #0084ff;
+  color: white;
+  cursor: pointer;
+}
+
+
 @media (max-width: 768px) {
     .contacts-sidebar {
         width: 100%;
