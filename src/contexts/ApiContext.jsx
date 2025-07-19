@@ -170,19 +170,15 @@ export const ApiProvider = ({ children }) => {
         withLoading(() => api.get('/Wpp/Instances').then(response => response.data)),
     [withLoading]);
 
-    const getChats = useCallback((number, projectId) => 
-        withLoading(async () => {
-            try {
-                const url = projectId ? `/Brain/ChatsByNumber?number=${number}&projectId=${projectId}` : `/Brain/ChatsByNumber?number=${number}`;
-                const response = await api.get(url);
-                debugLog('Chats recebidos:', response.data);
-                return response.data;
-            } catch (error) {
-                debugError('Erro ao buscar chats:', error);
-                throw error;
-            }
-        }),
-    [withLoading]);
+    const getChats = useCallback((number, projectId, since) => {
+        const params = { number };
+        if (projectId) params.projectId = projectId;
+        if (since) params.since = since;
+
+        return withLoading(() =>
+            api.get('/Brain/ChatsByNumber', { params }).then(res => res.data)
+        );
+    }, [withLoading]);
 
     const sendMessage = async ({ number, message }) => {
         try {

@@ -150,6 +150,44 @@ const Chats = () => {
 
         fetchData();
     }, [getContacts, getChatsNumbers, isAuthenticated, authLoading, userData]);
+    useEffect(() => {
+        if (!selectedNumber) return;
+
+        const interval = setInterval(async () => {
+            const chatObj = groupedChats.find(c => c.number === selectedNumber);
+            const lastTs = chatObj?.messages?.[chatObj.messages.length - 1]?.timestamp;
+
+            try {
+                const novos = await getChats(
+                    selectedNumber,
+                    userData?.isAdmin ? selectedProject : undefined,
+                    lastTs ?? null // não envia 'undefined'
+                );
+
+
+                if (!Array.isArray(novos) || novos.length === 0) return;
+
+                setGroupedChats(prev =>
+                    prev.map(chat =>
+                        chat.number !== selectedNumber
+                            ? chat
+                            : {
+                                ...chat,
+                                messages: [...chat.messages, ...novos],
+                                lastMessage: novos[novos.length - 1],
+                                lastMessageTime: new Date(novos[novos.length - 1].timestamp)
+                            }
+                    )
+                );
+
+                scrollToBottom();
+            } catch (err) {
+                console.error('Erro no polling de mensagens:', err);
+            }
+        }, 50000); // intervalo de 5 segundos
+
+        return () => clearInterval(interval); // limpa quando troca de contato
+    }, [selectedNumber, groupedChats, getChats, selectedProject, userData]);
 
     const handleNumberClick = async (number) => {
         setSelectedNumber(number);
@@ -333,42 +371,64 @@ const Chats = () => {
                         <li className="loading">Carregando conversas...</li>
                     ) : userData?.isAdmin && selectedProject ? (
                         chatNumbers.length > 0 ? (
-                            chatNumbers.map(number => (
-                                <li
-                                    key={number}
-                                    className={`contact ${selectedNumber === number ? 'active' : ''}`}
-                                    onClick={() => handleNumberClick(number)}
-                                >
-                                    <div className="contact-avatar">
-                                        {number.slice(-2)}
-                                    </div>
-                                    <div className="contact-info">
-                                        <div className="contact-number">{formatPhoneNumber(number)}</div>
-                                    </div>
-                                </li>
-                            ))
+                        chatNumbers
+                            .filter(({ name, number }) =>
+                                !searchTerm ||
+                                (name && name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                                number.includes(searchTerm)
+                            ).map(({ number, name, urlImage }) => (
+                            <li
+                            key={number}
+                            className={`contact ${selectedNumber === number ? 'active' : ''}`}
+                            onClick={() => handleNumberClick(number)}
+                            >
+                            {urlImage ? (
+                                <img
+                                className="contact-avatar"
+                                src={urlImage}
+                                alt={name || number}
+                                onError={(e) => {
+                                    e.target.style.display = 'none';
+                                    const fallback = e.target.nextSibling;
+                                    if (fallback) fallback.style.display = 'flex';
+                                }}
+                                />
+                            ) : (
+                                <div className="contact-avatar-fallback">{number.slice(-2)}</div>
+                            )}
+                            <div className="contact-info">
+                            {name ? (
+                                <>
+                                <div className="contact-name">{name}</div>
+                                <div className="contact-number-small">{formatPhoneNumber(number)}</div>
+                                </>
+                            ) : (
+                                <div className="contact-number">{formatPhoneNumber(number)}</div>
+                            )}
+                            </div>
+
+                            </li>
+                        ))
                         ) : (
-                            <li className="no-chats">Nenhum número encontrado para este projeto</li>
+                        <li className="no-chats">Nenhum número encontrado para este projeto</li>
                         )
                     ) : chatNumbers.length > 0 ? (
                         chatNumbers.map(number => (
-                            <li
-                                key={number}
-                                className={`contact ${selectedNumber === number ? 'active' : ''}`}
-                                onClick={() => handleNumberClick(number)}
-                            >
-                                <div className="contact-avatar">
-                                    {number.slice(-2)}
-                                </div>
-                                <div className="contact-info">
-                                    <div className="contact-number">{formatPhoneNumber(number)}</div>
-                                </div>
-                            </li>
+                        <li
+                            key={number}
+                            className={`contact ${selectedNumber === number ? 'active' : ''}`}
+                            onClick={() => handleNumberClick(number)}
+                        >
+                            <div className="contact-avatar">{number.slice(-2)}</div>
+                            <div className="contact-info">
+                            <div className="contact-number">{formatPhoneNumber(number)}</div>
+                            </div>
+                        </li>
                         ))
                     ) : (
                         <li className="no-chats">{error || 'Nenhuma conversa encontrada'}</li>
                     )}
-                </ul>
+                    </ul>
             </div>
 
             <div className="chat-panel">

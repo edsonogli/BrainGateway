@@ -389,3 +389,40 @@
         width: 100%;
     }
 }
+
+.contact-avatar,
+.contact-avatar-fallback {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.contact-avatar {
+  object-fit: cover;
+}
+
+.contact-avatar-fallback {
+  background: #ccc;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.contact-name {
+  font-weight: bold;
+  font-size: 0.95rem;
+  color: #222;
+}
+
+.contact-number-small {
+  font-size: 0.8rem;
+  color: #666;
+}
