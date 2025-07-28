@@ -135,8 +135,12 @@ const Chats = () => {
                 
                 setContacts(contactsData);
                 if (!userData?.isAdmin && numbers.length > 0) {
-                    setChatNumbers(numbers);
-                }
+                    const normalized = numbers.map(n =>
+                        typeof n === 'string' ? { number: n } : n
+                    );
+                    setChatNumbers(normalized);
+                }      
+
                 setError(null);
             } catch (err) {
                 debugError('Erro ao buscar dados:', err);
@@ -413,17 +417,17 @@ const Chats = () => {
                         <li className="no-chats">Nenhum número encontrado para este projeto</li>
                         )
                     ) : chatNumbers.length > 0 ? (
-                        chatNumbers.map(number => (
-                        <li
+                        chatNumbers.map(({ number, name, urlImage }) => (
+                            <li
                             key={number}
                             className={`contact ${selectedNumber === number ? 'active' : ''}`}
                             onClick={() => handleNumberClick(number)}
-                        >
+                            >
                             <div className="contact-avatar">{number.slice(-2)}</div>
                             <div className="contact-info">
-                            <div className="contact-number">{formatPhoneNumber(number)}</div>
+                                <div className="contact-number">{formatPhoneNumber(number)}</div>
                             </div>
-                        </li>
+                            </li>
                         ))
                     ) : (
                         <li className="no-chats">{error || 'Nenhuma conversa encontrada'}</li>
