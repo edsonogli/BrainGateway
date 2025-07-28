@@ -417,17 +417,43 @@ const Chats = () => {
                         <li className="no-chats">Nenhum número encontrado para este projeto</li>
                         )
                     ) : chatNumbers.length > 0 ? (
-                        chatNumbers.map(({ number, name, urlImage }) => (
-                            <li
+                    chatNumbers
+                        .filter(({ name, number }) =>
+                        !searchTerm ||
+                        (name && name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                        number.includes(searchTerm)
+                        )
+                        .map(({ number, name, urlImage }) => (
+                        <li
                             key={number}
                             className={`contact ${selectedNumber === number ? 'active' : ''}`}
                             onClick={() => handleNumberClick(number)}
-                            >
-                            <div className="contact-avatar">{number.slice(-2)}</div>
+                        >
+                            {urlImage ? (
+                            <img
+                                className="contact-avatar"
+                                src={urlImage}
+                                alt={name || number}
+                                onError={(e) => {
+                                e.target.style.display = 'none';
+                                const fallback = e.target.nextSibling;
+                                if (fallback) fallback.style.display = 'flex';
+                                }}
+                            />
+                            ) : (
+                            <div className="contact-avatar-fallback">{number.slice(-2)}</div>
+                            )}
                             <div className="contact-info">
+                            {name ? (
+                                <>
+                                <div className="contact-name">{name}</div>
+                                <div className="contact-number-small">{formatPhoneNumber(number)}</div>
+                                </>
+                            ) : (
                                 <div className="contact-number">{formatPhoneNumber(number)}</div>
+                            )}
                             </div>
-                            </li>
+                        </li>
                         ))
                     ) : (
                         <li className="no-chats">{error || 'Nenhuma conversa encontrada'}</li>
