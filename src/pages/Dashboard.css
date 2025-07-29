@@ -108,6 +108,16 @@
     color: #c62828;
 }
 
+.stat-card.integrations-active .stat-icon {
+    background: #e1f5fe;
+    color: #0277bd;
+}
+
+.stat-card.integrations-inactive .stat-icon {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
 /* Loading state */
 .dashboard-loading {
     display: flex;

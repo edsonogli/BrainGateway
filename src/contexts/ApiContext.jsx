@@ -131,6 +131,14 @@ export const ApiProvider = ({ children }) => {
         withLoading(() => api.post(`/Wpp/AtiveContact?id=${contactId}`).then(response => response.status)),
     [withLoading]);
 
+    const InativeContactsBatch = useCallback((contactIds) => 
+        withLoading(() => api.post('/Wpp/InativeContacts', { contactIds }).then(response => response.status)),
+    [withLoading]);
+
+    const AtiveContactsBatch = useCallback((contactIds) => 
+        withLoading(() => api.post('/Wpp/AtiveContacts', { contactIds }).then(response => response.status)),
+    [withLoading]);
+
     const getProjects = useCallback(() => 
         withLoading(() => api.get('/Brain/Projects').then(response => response.data)),
     [withLoading]);
@@ -255,6 +263,8 @@ export const ApiProvider = ({ children }) => {
         getContacts,
         InativeContact,
         AtiveContact,
+        InativeContactsBatch,
+        AtiveContactsBatch,
         getProjects,
         getProjectById,
         updateProject,

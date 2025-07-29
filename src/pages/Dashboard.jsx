@@ -10,7 +10,9 @@ const Dashboard = () => {
         totalMessagesSentToday: 0,
         totalSchedulesSentToday: 0,
         totalActiveContacts: 0,
-        totalInactiveContacts: 0
+        totalInactiveContacts: 0,
+        totalIntegrationsActive: 0,
+        totalIntegrationsInactive: 0
     });
     const [error, setError] = useState(null);
 
@@ -95,6 +97,24 @@ const Dashboard = () => {
                     <div className="stat-content">
                         <h3>Contatos Inativos</h3>
                         <div className="stat-value">{stats.totalInactiveContacts}</div>
+                        <div className="stat-subtitle">Total atual</div>
+                    </div>
+                </div>
+
+                <div className="stat-card integrations-active">
+                    <div className="stat-icon">🔗</div>
+                    <div className="stat-content">
+                        <h3>Integrações Ativas</h3>
+                        <div className="stat-value">{stats.totalIntegrationsActive}</div>
+                        <div className="stat-subtitle">Total atual</div>
+                    </div>
+                </div>
+
+                <div className="stat-card integrations-inactive">
+                    <div className="stat-icon">⚠️</div>
+                    <div className="stat-content">
+                        <h3>Integrações Inativas</h3>
+                        <div className="stat-value">{stats.totalIntegrationsInactive}</div>
                         <div className="stat-subtitle">Total atual</div>
                     </div>
                 </div>
