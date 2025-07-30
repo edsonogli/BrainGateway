@@ -5,7 +5,7 @@ import { debugLog, debugError, checkApiConnection } from '../config';
 import './Chats.css';
 
 const Chats = () => {
-    const { getChats, getContacts, InativeContact, AtiveContact, getChatsControlLog, getProjects, getChatsNumbers } = useApi();
+    const { getChats, getChatsSilent, getContacts, InativeContact, AtiveContact, getChatsControlLog, getProjects, getChatsNumbers, getChatNumbersSilent } = useApi();
     const { isAuthenticated, isLoading: authLoading, userData } = useAuth();
     const [chats, setChats] = useState([]);
     const [groupedChats, setGroupedChats] = useState([]);
@@ -14,7 +14,7 @@ const Chats = () => {
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [contacts, setContacts] = useState([]);
-    const [showActiveOnly, setShowActiveOnly] = useState(false);
+    const [showRequiresActionOnly, setShowRequiresActionOnly] = useState(false);
     const [controlLogs, setControlLogs] = useState([]);
     const [showLogs, setShowLogs] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -103,6 +103,48 @@ const Chats = () => {
         fetchChatNumbers();
     }, [selectedProject, getChatsNumbers]);
 
+    // Polling para atualizar a lista de números periodicamente
+    useEffect(() => {
+        if (!selectedProject && userData?.isAdmin) return;
+        if (!isAuthenticated) return;
+
+        const interval = setInterval(async () => {
+            try {
+                if (userData?.isAdmin && selectedProject) {
+                    // Para admin, busca números do projeto selecionado
+                    const numbers = await getChatNumbersSilent(selectedProject);
+                    setChatNumbers(prevNumbers => {
+                        // Só atualiza se houve mudança para evitar re-renders desnecessários
+                        if (JSON.stringify(prevNumbers) !== JSON.stringify(numbers)) {
+                            debugLog('Lista de números atualizada via polling');
+                            return numbers;
+                        }
+                        return prevNumbers;
+                    });
+                } else if (!userData?.isAdmin) {
+                    // Para usuário comum, busca todos os números
+                    const numbers = await getChatNumbersSilent();
+                    setChatNumbers(prevNumbers => {
+                        const normalized = numbers.map(n =>
+                            typeof n === 'string' ? { number: n } : n
+                        );
+                        // Só atualiza se houve mudança
+                        if (JSON.stringify(prevNumbers) !== JSON.stringify(normalized)) {
+                            debugLog('Lista de números atualizada via polling');
+                            return normalized;
+                        }
+                        return prevNumbers;
+                    });
+                }
+            } catch (err) {
+                debugError('Erro no polling de números:', err);
+                // Não mostra erro para o usuário para não ser intrusivo
+            }
+        }, 30000); // Atualiza a cada 30 segundos
+
+        return () => clearInterval(interval);
+    }, [selectedProject, userData, isAuthenticated, getChatNumbersSilent]);
+
     useEffect(() => {
         const fetchData = async () => {
             if (authLoading) return;
@@ -154,6 +196,7 @@ const Chats = () => {
 
         fetchData();
     }, [getContacts, getChatsNumbers, isAuthenticated, authLoading, userData]);
+    // Polling para buscar novas mensagens do número selecionado
     useEffect(() => {
         if (!selectedNumber) return;
 
@@ -162,12 +205,11 @@ const Chats = () => {
             const lastTs = chatObj?.messages?.[chatObj.messages.length - 1]?.timestamp;
 
             try {
-                const novos = await getChats(
+                const novos = await getChatsSilent(
                     selectedNumber,
                     userData?.isAdmin ? selectedProject : undefined,
                     lastTs ?? null // não envia 'undefined'
                 );
-
 
                 if (!Array.isArray(novos) || novos.length === 0) return;
 
@@ -188,10 +230,10 @@ const Chats = () => {
             } catch (err) {
                 console.error('Erro no polling de mensagens:', err);
             }
-        }, 50000); // intervalo de 5 segundos
+        }, 10000); // Verifica novas mensagens a cada 10 segundos
 
         return () => clearInterval(interval); // limpa quando troca de contato
-    }, [selectedNumber, groupedChats, getChats, selectedProject, userData]);
+    }, [selectedNumber, groupedChats, getChatsSilent, selectedProject, userData]);
 
     const handleNumberClick = async (number) => {
         setSelectedNumber(number);
@@ -363,10 +405,10 @@ const Chats = () => {
                         <label className="active-filter">
                             <input
                                 type="checkbox"
-                                checked={showActiveOnly}
-                                onChange={(e) => setShowActiveOnly(e.target.checked)}
+                                checked={showRequiresActionOnly}
+                                onChange={(e) => setShowRequiresActionOnly(e.target.checked)}
                             />
-                            Mostrar apenas ativos
+                            Mostrar apenas que requerem ação
                         </label>
                     </div>
                 </div>
@@ -376,14 +418,20 @@ const Chats = () => {
                     ) : userData?.isAdmin && selectedProject ? (
                         chatNumbers.length > 0 ? (
                         chatNumbers
-                            .filter(({ name, number }) =>
-                                !searchTerm ||
-                                (name && name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                                number.includes(searchTerm)
-                            ).map(({ number, name, urlImage }) => (
+                            .filter(({ name, number, requiresAction }) => {
+                                // Filtro de busca por texto
+                                const matchesSearch = !searchTerm ||
+                                    (name && name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                                    number.includes(searchTerm);
+                                
+                                // Filtro de ação requerida
+                                const matchesAction = !showRequiresActionOnly || requiresAction === true;
+                                
+                                return matchesSearch && matchesAction;
+                            }).map(({ number, name, urlImage, requiresAction }) => (
                             <li
                             key={number}
-                            className={`contact ${selectedNumber === number ? 'active' : ''}`}
+                            className={`contact ${selectedNumber === number ? 'active' : ''} ${requiresAction ? 'requires-action' : ''}`}
                             onClick={() => handleNumberClick(number)}
                             >
                             {urlImage ? (
@@ -410,6 +458,11 @@ const Chats = () => {
                                 <div className="contact-number">{formatPhoneNumber(number)}</div>
                             )}
                             </div>
+                            {requiresAction && (
+                                <div className="action-indicator" title="Este contato requer ação">
+                                    ⚠️
+                                </div>
+                            )}
 
                             </li>
                         ))
@@ -418,15 +471,21 @@ const Chats = () => {
                         )
                     ) : chatNumbers.length > 0 ? (
                     chatNumbers
-                        .filter(({ name, number }) =>
-                        !searchTerm ||
-                        (name && name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                        number.includes(searchTerm)
-                        )
-                        .map(({ number, name, urlImage }) => (
+                        .filter(({ name, number, requiresAction }) => {
+                            // Filtro de busca por texto
+                            const matchesSearch = !searchTerm ||
+                                (name && name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                                number.includes(searchTerm);
+                            
+                            // Filtro de ação requerida
+                            const matchesAction = !showRequiresActionOnly || requiresAction === true;
+                            
+                            return matchesSearch && matchesAction;
+                        })
+                        .map(({ number, name, urlImage, requiresAction }) => (
                         <li
                             key={number}
-                            className={`contact ${selectedNumber === number ? 'active' : ''}`}
+                            className={`contact ${selectedNumber === number ? 'active' : ''} ${requiresAction ? 'requires-action' : ''}`}
                             onClick={() => handleNumberClick(number)}
                         >
                             {urlImage ? (
@@ -453,6 +512,11 @@ const Chats = () => {
                                 <div className="contact-number">{formatPhoneNumber(number)}</div>
                             )}
                             </div>
+                            {requiresAction && (
+                                <div className="action-indicator" title="Este contato requer ação">
+                                    ⚠️
+                                </div>
+                            )}
                         </li>
                         ))
                     ) : (

@@ -188,6 +188,15 @@ export const ApiProvider = ({ children }) => {
         );
     }, [withLoading]);
 
+    // Versão silenciosa para polling (sem loading)
+    const getChatsSilent = useCallback((number, projectId, since) => {
+        const params = { number };
+        if (projectId) params.projectId = projectId;
+        if (since) params.since = since;
+
+        return api.get('/Brain/ChatsByNumber', { params }).then(res => res.data);
+    }, []);
+
     const sendMessage = async ({ number, message }) => {
         try {
             const response = await api.post('/Wpp/SendMessage', {
@@ -258,6 +267,12 @@ export const ApiProvider = ({ children }) => {
         }),
     [withLoading]);
 
+    // Versão silenciosa para polling (sem loading)
+    const getChatNumbersSilent = useCallback((projectId) => {
+        const url = projectId ? `/Brain/Numbers?projectId=${projectId}` : '/Brain/Numbers';
+        return api.get(url).then(response => response.data);
+    }, []);
+
     const value = {
         login,
         getContacts,
@@ -274,7 +289,9 @@ export const ApiProvider = ({ children }) => {
         updateAssistant,
         getInstances,
         getChats,
+        getChatsSilent,
         getChatsNumbers,
+        getChatNumbersSilent,
         getChatsControlLog,
         connectInstance,
         getNotifications,
