@@ -434,20 +434,25 @@ const Chats = () => {
                             className={`contact ${selectedNumber === number ? 'active' : ''} ${requiresAction ? 'requires-action' : ''}`}
                             onClick={() => handleNumberClick(number)}
                             >
-                            {urlImage ? (
-                                <img
-                                className="contact-avatar"
-                                src={urlImage}
-                                alt={name || number}
-                                onError={(e) => {
-                                    e.target.style.display = 'none';
-                                    const fallback = e.target.nextSibling;
-                                    if (fallback) fallback.style.display = 'flex';
-                                }}
-                                />
-                            ) : (
-                                <div className="contact-avatar-fallback">{number.slice(-2)}</div>
-                            )}
+                            <div className="contact-avatar-container">
+                                {urlImage ? (
+                                    <>
+                                        <img
+                                        className="contact-avatar"
+                                        src={urlImage}
+                                        alt={name || number}
+                                        onError={(e) => {
+                                            e.target.style.display = 'none';
+                                            const fallback = e.target.parentNode.querySelector('.contact-avatar-fallback');
+                                            if (fallback) fallback.style.display = 'flex';
+                                        }}
+                                        />
+                                        <div className="contact-avatar-fallback">{number.slice(-2)}</div>
+                                    </>
+                                ) : (
+                                    <div className="contact-avatar-fallback" style={{display: 'flex'}}>{number.slice(-2)}</div>
+                                )}
+                            </div>
                             <div className="contact-info">
                             {name ? (
                                 <>
@@ -488,20 +493,25 @@ const Chats = () => {
                             className={`contact ${selectedNumber === number ? 'active' : ''} ${requiresAction ? 'requires-action' : ''}`}
                             onClick={() => handleNumberClick(number)}
                         >
-                            {urlImage ? (
-                            <img
-                                className="contact-avatar"
-                                src={urlImage}
-                                alt={name || number}
-                                onError={(e) => {
-                                e.target.style.display = 'none';
-                                const fallback = e.target.nextSibling;
-                                if (fallback) fallback.style.display = 'flex';
-                                }}
-                            />
-                            ) : (
-                            <div className="contact-avatar-fallback">{number.slice(-2)}</div>
-                            )}
+                            <div className="contact-avatar-container">
+                                {urlImage ? (
+                                    <>
+                                        <img
+                                        className="contact-avatar"
+                                        src={urlImage}
+                                        alt={name || number}
+                                        onError={(e) => {
+                                            e.target.style.display = 'none';
+                                            const fallback = e.target.parentNode.querySelector('.contact-avatar-fallback');
+                                            if (fallback) fallback.style.display = 'flex';
+                                        }}
+                                        />
+                                        <div className="contact-avatar-fallback">{number.slice(-2)}</div>
+                                    </>
+                                ) : (
+                                    <div className="contact-avatar-fallback" style={{display: 'flex'}}>{number.slice(-2)}</div>
+                                )}
+                            </div>
                             <div className="contact-info">
                             {name ? (
                                 <>
