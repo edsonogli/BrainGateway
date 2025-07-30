@@ -128,6 +128,14 @@ const AdminLayout = () => {
                         Contatos
                     </Link>
                     <Link 
+                        to="/admin/campanhas" 
+                        onClick={toggleSidebar}
+                        className={isActiveLink('/admin/campanhas') ? 'active' : ''}
+                    >
+                        <span className="nav-icon">📊</span>
+                        Campanhas
+                    </Link>
+                    <Link 
                         to="/admin/chats" 
                         onClick={toggleSidebar}
                         className={isActiveLink('/admin/chats') ? 'active' : ''}
