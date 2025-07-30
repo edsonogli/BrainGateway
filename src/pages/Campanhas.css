@@ -266,11 +266,94 @@
     color: #6c757d;
 }
 
-.no-contacts {
+/* Loading e mensagens de estado */
+.loading-message, .no-surveys, .no-data, .no-contacts {
     text-align: center;
-    padding: 20px;
+    padding: 40px 20px;
     color: #6c757d;
     font-style: italic;
+    grid-column: 1 / -1;
+}
+
+.loading-message {
+    font-size: 16px;
+}
+
+.no-surveys, .no-data, .no-contacts {
+    font-size: 14px;
+}
+
+/* Botão de excluir */
+.btn-delete {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.btn-delete:hover {
+    background-color: #c82333;
+}
+
+/* Opções de resposta como tags */
+.opcoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0;
+}
+
+.opcao-tag {
+    background-color: #e9ecef;
+    color: #495057;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    border: 1px solid #dee2e6;
+}
+
+/* Ajustes no formulário */
+.option-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.option-input input {
+    flex: 1;
+}
+
+.remove-option-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.add-option-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.add-option-btn:hover {
+    background-color: #218838;
 }
 
 /* Modal Styles */

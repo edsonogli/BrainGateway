@@ -3,13 +3,22 @@ import { useApi } from '../contexts/ApiContext';
 import './Campanhas.css';
 
 const Campanhas = () => {
-    const { getContacts } = useApi();
+    const { 
+        getContacts, 
+        getSurveys, 
+        createSurvey, 
+        deleteSurvey, 
+        getSurveyDispatches, 
+        createSurveyDispatchBulk,
+        getSurveyStatistics 
+    } = useApi();
     
     // Estados para contatos (carregados via API)
     const [contacts, setContacts] = useState([]);
     const [loadingContacts, setLoadingContacts] = useState(false);
     
     const [pesquisas, setPesquisas] = useState([]);
+    const [loadingPesquisas, setLoadingPesquisas] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [showDispatchModal, setShowDispatchModal] = useState(false);
     const [showHistoryModal, setShowHistoryModal] = useState(false);
@@ -18,118 +27,55 @@ const Campanhas = () => {
     const [uploadedFile, setUploadedFile] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [formData, setFormData] = useState({
-        nome: '',
-        pergunta: '',
-        respostas: ['']
+        name: '',
+        question: '',
+        options: ['']
     });
+    const [historico, setHistorico] = useState([]);
+    const [loadingHistory, setLoadingHistory] = useState(false);
 
-    // Carregar contatos via API
+    // Carregar pesquisas ao montar o componente
     useEffect(() => {
-        const fetchContacts = async () => {
-            try {
-                setLoadingContacts(true);
-                const data = await getContacts();
-                setContacts(data);
-            } catch (error) {
-                console.error('Erro ao carregar contatos:', error);
-            } finally {
-                setLoadingContacts(false);
-            }
-        };
-        
-        fetchContacts();
-    }, [getContacts]);
-
-
-
-    const mockPesquisas = [
-        {
-            id: 1,
-            nome: 'Satisfação do Cliente',
-            pergunta: 'Como você avalia nosso atendimento?',
-            respostas: ['Excelente', 'Bom', 'Regular', 'Ruim'],
-            criadoEm: '2024-01-15',
-            status: 'Ativa'
-        },
-        {
-            id: 2,
-            nome: 'Pesquisa de Produto',
-            pergunta: 'Qual produto você gostaria de ver em nossa loja?',
-            respostas: ['Eletrônicos', 'Roupas', 'Casa e Jardim', 'Esportes'],
-            criadoEm: '2024-01-10',
-            status: 'Ativa'
-        },
-        {
-            id: 3,
-            nome: 'Feedback de Entrega',
-            pergunta: 'Como foi sua experiência com a entrega?',
-            respostas: ['Muito rápida', 'No prazo', 'Atrasada', 'Não recebi'],
-            criadoEm: '2024-01-05',
-            status: 'Finalizada'
-        }
-    ];
-
-    // Dados mockados para histórico de disparos
-    const mockHistorico = [
-        {
-            id: 1,
-            pesquisaId: 1,
-            numero: '11999999999',
-            nomeContato: 'João Silva',
-            dataDisparo: '2024-01-20 14:30:00',
-            resposta: 'Excelente',
-            dataResposta: '2024-01-20 14:35:00'
-        },
-        {
-            id: 2,
-            pesquisaId: 1,
-            numero: '11888888888',
-            nomeContato: 'Maria Santos',
-            dataDisparo: '2024-01-20 14:30:00',
-            resposta: 'Bom',
-            dataResposta: '2024-01-20 14:40:00'
-        },
-        {
-            id: 3,
-            pesquisaId: 1,
-            numero: '11777777777',
-            nomeContato: 'Pedro Oliveira',
-            dataDisparo: '2024-01-20 14:30:00',
-            resposta: null,
-            dataResposta: null
-        },
-        {
-            id: 4,
-            pesquisaId: 2,
-            numero: '11666666666',
-            nomeContato: 'Ana Costa',
-            dataDisparo: '2024-01-18 10:15:00',
-            resposta: 'Eletrônicos',
-            dataResposta: '2024-01-18 10:20:00'
-        },
-        {
-            id: 5,
-            pesquisaId: 2,
-            numero: '11555555555',
-            nomeContato: 'Carlos Ferreira',
-            dataDisparo: '2024-01-18 10:15:00',
-            resposta: 'Roupas',
-            dataResposta: '2024-01-18 10:25:00'
-        },
-        {
-            id: 6,
-            pesquisaId: 3,
-            numero: '11444444444',
-            nomeContato: 'Lucia Almeida',
-            dataDisparo: '2024-01-10 16:00:00',
-            resposta: 'No prazo',
-            dataResposta: '2024-01-10 16:05:00'
-        }
-    ];
-
-    useEffect(() => {
-        setPesquisas(mockPesquisas);
+        loadPesquisas();
     }, []);
+
+    const loadPesquisas = async () => {
+        try {
+            setLoadingPesquisas(true);
+            const data = await getSurveys();
+            setPesquisas(data || []);
+        } catch (error) {
+            console.error('Erro ao carregar pesquisas:', error);
+            setPesquisas([]);
+        } finally {
+            setLoadingPesquisas(false);
+        }
+    };
+
+
+    // Carregar contatos quando necessário
+    useEffect(() => {
+        if (showDispatchModal) {
+            loadContacts();
+        }
+    }, [showDispatchModal]);
+
+    const loadContacts = async () => {
+        try {
+            setLoadingContacts(true);
+            const data = await getContacts();
+            setContacts(data || []);
+        } catch (error) {
+            console.error('Erro ao carregar contatos:', error);
+            setContacts([]);
+        } finally {
+            setLoadingContacts(false);
+        }
+    };
+
+
+
+
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -139,46 +85,68 @@ const Campanhas = () => {
         }));
     };
 
-    const handleRespostaChange = (index, value) => {
-        const newRespostas = [...formData.respostas];
-        newRespostas[index] = value;
+    const handleOptionChange = (index, value) => {
+        const newOptions = [...formData.options];
+        newOptions[index] = value;
         setFormData(prev => ({
             ...prev,
-            respostas: newRespostas
+            options: newOptions
         }));
     };
 
-    const addResposta = () => {
+    const addOption = () => {
         setFormData(prev => ({
             ...prev,
-            respostas: [...prev.respostas, '']
+            options: [...prev.options, '']
         }));
     };
 
-    const removeResposta = (index) => {
-        if (formData.respostas.length > 1) {
-            const newRespostas = formData.respostas.filter((_, i) => i !== index);
+    const removeOption = (index) => {
+        if (formData.options.length > 1) {
+            const newOptions = formData.options.filter((_, i) => i !== index);
             setFormData(prev => ({
                 ...prev,
-                respostas: newRespostas
+                options: newOptions
             }));
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const novaPesquisa = {
-            id: pesquisas.length + 1,
-            nome: formData.nome,
-            pergunta: formData.pergunta,
-            respostas: formData.respostas.filter(r => r.trim() !== ''),
-            criadoEm: new Date().toISOString().split('T')[0],
-            status: 'Ativa'
-        };
-        
-        setPesquisas(prev => [...prev, novaPesquisa]);
-        setFormData({ nome: '', pergunta: '', respostas: [''] });
-        setShowForm(false);
+        try {
+            const surveyData = {
+                name: formData.name,
+                question: formData.question,
+                options: formData.options.filter(option => option.trim() !== ''),
+                projectId: 1 // Assumindo projectId padrão, pode ser obtido do contexto
+            };
+            
+            await createSurvey(surveyData);
+            await loadPesquisas(); // Recarregar lista
+            
+            // Resetar formulário
+            setFormData({
+                name: '',
+                question: '',
+                options: ['']
+            });
+            setShowForm(false);
+        } catch (error) {
+            console.error('Erro ao criar pesquisa:', error);
+            alert('Erro ao criar pesquisa. Tente novamente.');
+        }
+    };
+
+    const handleDelete = async (pesquisaId) => {
+        if (window.confirm('Tem certeza que deseja excluir esta pesquisa?')) {
+            try {
+                await deleteSurvey(pesquisaId);
+                await loadPesquisas(); // Recarregar lista
+            } catch (error) {
+                console.error('Erro ao excluir pesquisa:', error);
+                alert('Erro ao excluir pesquisa. Tente novamente.');
+            }
+        }
     };
 
     const handleDispatch = (pesquisa) => {
@@ -220,41 +188,64 @@ const Campanhas = () => {
         }
     };
 
-    const confirmDispatch = () => {
+    const confirmDispatch = async () => {
         if (selectedContacts.length === 0) {
-            alert('Selecione pelo menos um contato para disparar a pesquisa.');
+            alert('Selecione pelo menos um contato.');
             return;
         }
-        
-        // Aqui seria feita a chamada para a API
-        alert(`Pesquisa "${selectedPesquisa.nome}" disparada para ${selectedContacts.length} contatos!`);
-        setShowDispatchModal(false);
-        setSelectedContacts([]);
-        setSelectedPesquisa(null);
+
+        try {
+            const contactNumbers = selectedContacts.map(contactId => {
+                const contact = contacts.find(c => c.id === contactId);
+                return contact?.number;
+            }).filter(Boolean);
+
+            await createSurveyDispatchBulk(selectedPesquisa.id, {
+                contactNumbers,
+                projectId: 1 // Assumindo projectId padrão
+            });
+
+            alert('Pesquisa disparada com sucesso!');
+            setShowDispatchModal(false);
+            setSelectedContacts([]);
+        } catch (error) {
+            console.error('Erro ao disparar pesquisa:', error);
+            alert('Erro ao disparar pesquisa. Tente novamente.');
+        }
     };
 
-    const handleViewHistory = (pesquisa) => {
+    const handleViewHistory = async (pesquisa) => {
         setSelectedPesquisa(pesquisa);
         setShowHistoryModal(true);
-    };
-
-    const getHistoricoByPesquisa = (pesquisaId) => {
-        return mockHistorico.filter(item => item.pesquisaId === pesquisaId);
+        
+        try {
+            setLoadingHistory(true);
+            const data = await getSurveyDispatches(pesquisa.id);
+            setHistorico(data || []);
+        } catch (error) {
+            console.error('Erro ao carregar histórico:', error);
+            setHistorico([]);
+        } finally {
+            setLoadingHistory(false);
+        }
     };
 
     const exportHistorico = () => {
-        const historico = getHistoricoByPesquisa(selectedPesquisa.id);
+        if (!historico.length) {
+            alert('Não há dados para exportar.');
+            return;
+        }
         
         // Criar CSV
         const headers = ['Nome', 'Número', 'Data Disparo', 'Resposta', 'Data Resposta'];
         const csvContent = [
             headers.join(','),
             ...historico.map(item => [
-                item.nomeContato,
-                item.numero,
-                item.dataDisparo,
-                item.resposta || 'Sem resposta',
-                item.dataResposta || 'Não respondeu'
+                item.contactName || 'N/A',
+                item.contactNumber,
+                item.dispatchDate ? new Date(item.dispatchDate).toLocaleString('pt-BR') : 'Não enviado',
+                item.response || 'Sem resposta',
+                item.responseDate ? new Date(item.responseDate).toLocaleString('pt-BR') : '-'
             ].join(','))
         ].join('\n');
 
@@ -263,7 +254,7 @@ const Campanhas = () => {
         const link = document.createElement('a');
         const url = URL.createObjectURL(blob);
         link.setAttribute('href', url);
-        link.setAttribute('download', `historico_${selectedPesquisa.nome.replace(/\s+/g, '_')}.csv`);
+        link.setAttribute('download', `historico_${selectedPesquisa.name}_${new Date().toISOString().split('T')[0]}.csv`);
         link.style.visibility = 'hidden';
         document.body.appendChild(link);
         link.click();
@@ -284,43 +275,54 @@ const Campanhas = () => {
 
             {/* Lista de Pesquisas */}
             <div className="pesquisas-grid">
-                {pesquisas.map(pesquisa => (
-                    <div key={pesquisa.id} className="pesquisa-card">
-                        <div className="pesquisa-header">
-                            <h3>{pesquisa.nome}</h3>
-                            <span className={`status ${pesquisa.status.toLowerCase()}`}>
-                                {pesquisa.status}
-                            </span>
-                        </div>
-                        <div className="pesquisa-content">
-                            <p className="pergunta">{pesquisa.pergunta}</p>
-                            <div className="respostas">
-                                <strong>Opções de resposta:</strong>
-                                <ul>
-                                    {pesquisa.respostas.map((resposta, index) => (
-                                        <li key={index}>{resposta}</li>
-                                    ))}
-                                </ul>
+                {loadingPesquisas ? (
+                    <div className="loading-message">Carregando pesquisas...</div>
+                ) : pesquisas.length === 0 ? (
+                    <div className="no-surveys">Nenhuma pesquisa encontrada.</div>
+                ) : (
+                    pesquisas.map(pesquisa => (
+                        <div key={pesquisa.id} className="pesquisa-card">
+                            <div className="pesquisa-header">
+                                <h3>{pesquisa.name}</h3>
+                                <span className={`status ${pesquisa.status?.toLowerCase()}`}>
+                                    {pesquisa.status}
+                                </span>
                             </div>
-                            <p className="data-criacao">Criado em: {pesquisa.criadoEm}</p>
+                            <div className="pesquisa-content">
+                                <p className="pergunta">{pesquisa.question}</p>
+                                <div className="opcoes">
+                                    {pesquisa.options?.map((opcao, index) => (
+                                        <span key={index} className="opcao-tag">{opcao}</span>
+                                    ))}
+                                </div>
+                                <p className="data-criacao">
+                                    Criado em: {new Date(pesquisa.createdAt).toLocaleDateString('pt-BR')}
+                                </p>
+                            </div>
+                            <div className="pesquisa-actions">
+                                <button 
+                                    className="btn-dispatch"
+                                    onClick={() => handleDispatch(pesquisa)}
+                                    disabled={pesquisa.status === 'closed'}
+                                >
+                                    📤 Disparar Pesquisa
+                                </button>
+                                <button 
+                                    className="btn-history"
+                                    onClick={() => handleViewHistory(pesquisa)}
+                                >
+                                    📊 Histórico
+                                </button>
+                                <button 
+                                    className="btn-delete"
+                                    onClick={() => handleDelete(pesquisa.id)}
+                                >
+                                    🗑️ Excluir
+                                </button>
+                            </div>
                         </div>
-                        <div className="pesquisa-actions">
-                            <button 
-                                className="btn-dispatch"
-                                onClick={() => handleDispatch(pesquisa)}
-                                disabled={pesquisa.status === 'Finalizada'}
-                            >
-                                📤 Disparar Pesquisa
-                            </button>
-                            <button 
-                                className="btn-history"
-                                onClick={() => handleViewHistory(pesquisa)}
-                            >
-                                📊 Histórico
-                            </button>
-                        </div>
-                    </div>
-                ))}
+                    ))
+                )}
             </div>
 
             {/* Modal de Formulário */}
@@ -338,23 +340,23 @@ const Campanhas = () => {
                         </div>
                         <form onSubmit={handleSubmit} className="pesquisa-form">
                             <div className="form-group">
-                                <label htmlFor="nome">Nome da Pesquisa:</label>
+                                <label htmlFor="name">Nome da Pesquisa:</label>
                                 <input
                                     type="text"
-                                    id="nome"
-                                    name="nome"
-                                    value={formData.nome}
+                                    id="name"
+                                    name="name"
+                                    value={formData.name}
                                     onChange={handleInputChange}
                                     required
                                 />
                             </div>
                             
                             <div className="form-group">
-                                <label htmlFor="pergunta">Pergunta:</label>
+                                <label htmlFor="question">Pergunta:</label>
                                 <textarea
-                                    id="pergunta"
-                                    name="pergunta"
-                                    value={formData.pergunta}
+                                    id="question"
+                                    name="question"
+                                    value={formData.question}
                                     onChange={handleInputChange}
                                     rows="3"
                                     required
@@ -363,20 +365,20 @@ const Campanhas = () => {
                             
                             <div className="form-group">
                                 <label>Possíveis Respostas:</label>
-                                {formData.respostas.map((resposta, index) => (
-                                    <div key={index} className="resposta-input">
+                                {formData.options.map((option, index) => (
+                                    <div key={index} className="option-input">
                                         <input
                                             type="text"
-                                            value={resposta}
-                                            onChange={(e) => handleRespostaChange(index, e.target.value)}
+                                            value={option}
+                                            onChange={(e) => handleOptionChange(index, e.target.value)}
                                             placeholder={`Opção ${index + 1}`}
                                             required
                                         />
-                                        {formData.respostas.length > 1 && (
+                                        {formData.options.length > 1 && (
                                             <button
                                                 type="button"
                                                 className="remove-btn"
-                                                onClick={() => removeResposta(index)}
+                                                onClick={() => removeOption(index)}
                                             >
                                                 ×
                                             </button>
@@ -385,8 +387,8 @@ const Campanhas = () => {
                                 ))}
                                 <button
                                     type="button"
-                                    className="add-resposta-btn"
-                                    onClick={addResposta}
+                                    className="add-option-btn"
+                                    onClick={addOption}
                                 >
                                     + Adicionar Opção
                                 </button>
@@ -410,7 +412,7 @@ const Campanhas = () => {
                 <div className="modal-overlay">
                     <div className="modal-content dispatch-modal">
                         <div className="modal-header">
-                            <h3>Disparar Pesquisa: {selectedPesquisa.nome}</h3>
+                            <h3>Disparar Pesquisa: {selectedPesquisa.name}</h3>
                             <button 
                                 className="close-btn"
                                 onClick={() => setShowDispatchModal(false)}
@@ -526,7 +528,7 @@ const Campanhas = () => {
                 <div className="modal-overlay">
                     <div className="modal-content history-modal">
                         <div className="modal-header">
-                            <h3>Histórico: {selectedPesquisa.nome}</h3>
+                            <h3>Histórico: {selectedPesquisa.name}</h3>
                             <button 
                                 className="close-btn"
                                 onClick={() => setShowHistoryModal(false)}
@@ -557,26 +559,36 @@ const Campanhas = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {getHistoricoByPesquisa(selectedPesquisa.id).map(item => (
-                                            <tr key={item.id}>
-                                                <td>{item.nomeContato}</td>
-                                                <td>{item.numero}</td>
-                                                <td>{new Date(item.dataDisparo).toLocaleString('pt-BR')}</td>
-                                                <td>
-                                                    {item.resposta ? (
-                                                        <span className="resposta-recebida">{item.resposta}</span>
-                                                    ) : (
-                                                        <span className="sem-resposta">Sem resposta</span>
-                                                    )}
-                                                </td>
-                                                <td>
-                                                    {item.dataResposta ? 
-                                                        new Date(item.dataResposta).toLocaleString('pt-BR') : 
-                                                        '-'
-                                                    }
-                                                </td>
+                                        {loadingHistory ? (
+                                            <tr>
+                                                <td colSpan="5" className="loading-message">Carregando histórico...</td>
                                             </tr>
-                                        ))}
+                                        ) : historico.length === 0 ? (
+                                            <tr>
+                                                <td colSpan="5" className="no-data">Nenhum disparo encontrado</td>
+                                            </tr>
+                                        ) : (
+                                            historico.map((item, index) => (
+                                                <tr key={index}>
+                                                    <td>{item.contactName || 'N/A'}</td>
+                                                    <td>{item.contactNumber}</td>
+                                                    <td>{item.dispatchDate ? new Date(item.dispatchDate).toLocaleString('pt-BR') : 'Não enviado'}</td>
+                                                    <td>
+                                                        {item.response ? (
+                                                            <span className="resposta-recebida">{item.response}</span>
+                                                        ) : (
+                                                            <span className="sem-resposta">Sem resposta</span>
+                                                        )}
+                                                    </td>
+                                                    <td>
+                                                        {item.responseDate ? 
+                                                            new Date(item.responseDate).toLocaleString('pt-BR') : 
+                                                            '-'
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        )}
                                     </tbody>
                                 </table>
                             </div>
