@@ -125,18 +125,7 @@
     }
 }
 
-.contact-avatar {
-    width: 48px;
-    height: 48px;
-    background-color: #00a884;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: bold;
-    font-size: 16px;
-}
+/* Removendo definição conflitante - mantendo apenas a definição correta no final do arquivo */
 
 .contact-info {
     flex-grow: 1;

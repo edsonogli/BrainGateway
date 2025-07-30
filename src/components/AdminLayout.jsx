@@ -1,6 +1,6 @@
 // src/components/AdminLayout.jsx
 import React, { useState, useEffect } from 'react';
-import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useApi } from '../contexts/ApiContext';
 import LoadingSpinner from './LoadingSpinner';
 import ochatproLogo from '../assets/logo.png';
@@ -11,6 +11,7 @@ const AdminLayout = () => {
     const [userData, setUserData] = useState(null);
     const { isLoading } = useApi();
     const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         const token = localStorage.getItem('authToken');
@@ -44,6 +45,11 @@ const AdminLayout = () => {
         return true;
     };
 
+    // Função para verificar se o link está ativo
+    const isActiveLink = (path) => {
+        return location.pathname === path;
+    };
+
     return (
         <div className="admin-container">
             <button className="menu-toggle" onClick={toggleSidebar}>
@@ -55,57 +61,101 @@ const AdminLayout = () => {
                     <h1>OChatPro</h1>
                 </div>
                 <nav className="sidebar-nav">
-                    <Link to="/admin/dashboard" onClick={toggleSidebar}>
+                    <Link 
+                        to="/admin/dashboard" 
+                        onClick={toggleSidebar}
+                        className={isActiveLink('/admin/dashboard') ? 'active' : ''}
+                    >
                         <span className="nav-icon">📊</span>
                         Dashboard
                     </Link>
                     {shouldShowMenu('/admin/instances') && (
-                        <Link to="/admin/instances" onClick={toggleSidebar}>
+                        <Link 
+                            to="/admin/instances" 
+                            onClick={toggleSidebar}
+                            className={isActiveLink('/admin/instances') ? 'active' : ''}
+                        >
                             <span className="nav-icon">📱</span>
                             Instâncias
                         </Link>
                     )}
                     {shouldShowMenu('/admin/instances/connect') && (
-                        <Link to="/admin/instances/connect" onClick={toggleSidebar}>
+                        <Link 
+                            to="/admin/instances/connect" 
+                            onClick={toggleSidebar}
+                            className={isActiveLink('/admin/instances/connect') ? 'active' : ''}
+                        >
                             <span className="nav-icon">🔗</span>
                             Conectar Nova Instância
                         </Link>
                     )}
                     {shouldShowMenu('/admin/assistants') && (
-                        <Link to="/admin/assistants" onClick={toggleSidebar}>
+                        <Link 
+                            to="/admin/assistants" 
+                            onClick={toggleSidebar}
+                            className={isActiveLink('/admin/assistants') ? 'active' : ''}
+                        >
                             <span className="nav-icon">🤖</span>
                             Assistentes
                         </Link>
                     )}
                     {shouldShowMenu('/admin/settings') && (
-                        <Link to="/admin/settings" onClick={toggleSidebar}>
+                        <Link 
+                            to="/admin/settings" 
+                            onClick={toggleSidebar}
+                            className={isActiveLink('/admin/settings') ? 'active' : ''}
+                        >
                             <span className="nav-icon">⚙️</span>
                             Settings
                         </Link>
                     )}
                     {shouldShowMenu('/admin/projects') && (
-                        <Link to="/admin/projects" onClick={toggleSidebar}>
+                        <Link 
+                            to="/admin/projects" 
+                            onClick={toggleSidebar}
+                            className={isActiveLink('/admin/projects') ? 'active' : ''}
+                        >
                             <span className="nav-icon">📁</span>
                             Projetos
                         </Link>
                     )}
-                    <Link to="/admin/contacts" onClick={toggleSidebar}>
+                    <Link 
+                        to="/admin/contacts" 
+                        onClick={toggleSidebar}
+                        className={isActiveLink('/admin/contacts') ? 'active' : ''}
+                    >
                         <span className="nav-icon">👥</span>
                         Contatos
                     </Link>
-                    <Link to="/admin/chats" onClick={toggleSidebar}>
+                    <Link 
+                        to="/admin/chats" 
+                        onClick={toggleSidebar}
+                        className={isActiveLink('/admin/chats') ? 'active' : ''}
+                    >
                         <span className="nav-icon">💬</span>
                         Chats
                     </Link>
-                    <Link to="/admin/notifications" onClick={toggleSidebar}>
+                    <Link 
+                        to="/admin/notifications" 
+                        onClick={toggleSidebar}
+                        className={isActiveLink('/admin/notifications') ? 'active' : ''}
+                    >
                         <span className="nav-icon">🔔</span>
                         Notificações
                     </Link>
-                    <Link to="/admin/schedules" onClick={toggleSidebar}>
+                    <Link 
+                        to="/admin/schedules" 
+                        onClick={toggleSidebar}
+                        className={isActiveLink('/admin/schedules') ? 'active' : ''}
+                    >
                         <span className="nav-icon">📅</span>
                         Agendamentos
                     </Link>
-                    <Link to="/admin/logs" onClick={toggleSidebar}>
+                    <Link 
+                        to="/admin/logs" 
+                        onClick={toggleSidebar}
+                        className={isActiveLink('/admin/logs') ? 'active' : ''}
+                    >
                         <span className="nav-icon">📋</span>
                         Logs
                     </Link>

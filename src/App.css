@@ -2,24 +2,6 @@
     display: flex;
 }
 
-.sidebar {
-    width: 250px;
-    background-color: #282c34;
-    color: #fff;
-    padding: 1rem;
-}
-
-.sidebar nav a {
-    display: block;
-    color: #fff;
-    padding: 0.5rem 0;
-    text-decoration: none;
-}
-
-.sidebar nav a:hover {
-    background-color: #404854;
-}
-
 .content {
     padding: 2rem;
     width: 100%;
