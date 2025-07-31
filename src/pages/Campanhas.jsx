@@ -301,9 +301,12 @@ const Campanhas = () => {
         }
 
         try {
+            // Usar o projectId do selectedPesquisa se o usuário for admin
+            const projectId = userData?.isAdmin ? selectedPesquisa.projectId : 0;
+            
             await createSurveyDispatchBulk(selectedPesquisa.id, {
                 contactNumbers,
-                projectId: 1 // Assumindo projectId padrão
+                projectId: projectId
             });
 
             alert(`Pesquisa disparada com sucesso para ${contactNumbers.length} contatos!`);
@@ -589,7 +592,7 @@ const Campanhas = () => {
                                             {loadingProjects ? 'Carregando projetos...' : 'Selecione um projeto'}
                                         </option>
                                         {projects.map(project => (
-                                            <option key={project.id} value={project.id}>
+                                            <option key={project.id} value={project.projectId || project.id}>
                                                 {project.name}
                                             </option>
                                         ))}
