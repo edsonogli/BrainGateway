@@ -273,6 +273,75 @@ export const ApiProvider = ({ children }) => {
         return api.get(url).then(response => response.data);
     }, []);
 
+    // Survey API endpoints
+    const getSurveys = useCallback((projectId) => 
+        withLoading(() => {
+            const url = projectId ? `/survey?projectId=${projectId}` : '/survey';
+            return api.get(url).then(response => response.data);
+        }),
+    [withLoading]);
+
+    const getSurveyById = useCallback((id) => 
+        withLoading(() => api.get(`/survey/${id}`).then(response => response.data)),
+    [withLoading]);
+
+    const createSurvey = useCallback((surveyData) => 
+        withLoading(() => api.post('/survey', surveyData).then(response => response.data)),
+    [withLoading]);
+
+    const updateSurvey = useCallback((id, surveyData) => 
+        withLoading(() => api.put(`/survey/${id}`, surveyData).then(response => response.data)),
+    [withLoading]);
+
+    const deleteSurvey = useCallback((id) => 
+        withLoading(() => api.delete(`/survey/${id}`).then(response => response.data)),
+    [withLoading]);
+
+    const getSurveyDispatches = useCallback((surveyId, projectId) => 
+        withLoading(() => {
+            const url = projectId ? 
+                `/survey/${surveyId}/dispatches?projectId=${projectId}` : 
+                `/survey/${surveyId}/dispatches`;
+            return api.get(url).then(response => response.data);
+        }),
+    [withLoading]);
+
+    const createSurveyDispatch = useCallback((surveyId, dispatchData) => 
+        withLoading(() => api.post(`/survey/${surveyId}/dispatches`, dispatchData).then(response => response.data)),
+    [withLoading]);
+
+    const createSurveyDispatchBulk = useCallback((surveyId, dispatchData) => 
+        withLoading(() => api.post(`/survey/${surveyId}/dispatches/bulk`, dispatchData).then(response => response.data)),
+    [withLoading]);
+
+    const updateSurveyDispatchResponse = useCallback((dispatchId, response) => 
+        withLoading(() => api.put(`/survey/dispatches/${dispatchId}/response`, { response }).then(response => response.data)),
+    [withLoading]);
+
+    const markDispatchAsSent = useCallback((dispatchId) => 
+        withLoading(() => api.put(`/survey/dispatches/${dispatchId}/dispatch`).then(response => response.data)),
+    [withLoading]);
+
+    const getSurveyStatistics = useCallback((surveyId) => 
+        withLoading(() => api.get(`/survey/${surveyId}/statistics`).then(response => response.data)),
+    [withLoading]);
+
+    const processSurveySpreadsheet = useCallback((surveyId, file) => 
+        withLoading(() => {
+            const formData = new FormData();
+            formData.append('file', file);
+            return api.post(`/survey/${surveyId}/process-spreadsheet`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            }).then(response => response.data);
+        }),
+    [withLoading]);
+
+    const sendSurveyMessages = useCallback((surveyId, numbers) => 
+        withLoading(() => api.post(`/survey/${surveyId}/send-messages`, { numbers }).then(response => response.data)),
+    [withLoading]);
+
     const value = {
         login,
         getContacts,
@@ -304,6 +373,20 @@ export const ApiProvider = ({ children }) => {
         deleteSchedule,
         getDashboard,
         sendMessage,
+        // Survey endpoints
+        getSurveys,
+        getSurveyById,
+        createSurvey,
+        updateSurvey,
+        deleteSurvey,
+        getSurveyDispatches,
+        createSurveyDispatch,
+        createSurveyDispatchBulk,
+        updateSurveyDispatchResponse,
+        markDispatchAsSent,
+        getSurveyStatistics,
+        processSurveySpreadsheet,
+        sendSurveyMessages,
         isLoading
     };
 
