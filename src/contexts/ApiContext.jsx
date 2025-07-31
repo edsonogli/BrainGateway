@@ -326,6 +326,22 @@ export const ApiProvider = ({ children }) => {
         withLoading(() => api.get(`/survey/${surveyId}/statistics`).then(response => response.data)),
     [withLoading]);
 
+    const processSurveySpreadsheet = useCallback((surveyId, file) => 
+        withLoading(() => {
+            const formData = new FormData();
+            formData.append('file', file);
+            return api.post(`/survey/${surveyId}/process-spreadsheet`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            }).then(response => response.data);
+        }),
+    [withLoading]);
+
+    const sendSurveyMessages = useCallback((surveyId, numbers) => 
+        withLoading(() => api.post(`/survey/${surveyId}/send-messages`, { numbers }).then(response => response.data)),
+    [withLoading]);
+
     const value = {
         login,
         getContacts,
@@ -369,6 +385,8 @@ export const ApiProvider = ({ children }) => {
         updateSurveyDispatchResponse,
         markDispatchAsSent,
         getSurveyStatistics,
+        processSurveySpreadsheet,
+        sendSurveyMessages,
         isLoading
     };
 

@@ -194,26 +194,97 @@
 
 .history-actions {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 25px;
-    padding-right: 5px;
+    padding: 15px 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.history-actions-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.history-actions-right {
+    display: flex;
+    align-items: center;
 }
 
 .btn-export {
     background-color: #28a745;
     color: white;
     border: none;
-    padding: 12px 24px;
+    padding: 10px 20px;
     border-radius: 6px;
     cursor: pointer;
     font-weight: 600;
     transition: all 0.3s ease;
     font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .btn-export:hover {
     background-color: #218838;
     transform: translateY(-1px);
+}
+
+.filter-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #495057;
+    cursor: pointer;
+    padding: 8px 12px;
+    background-color: white;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.filter-checkbox:hover {
+    background-color: #e9ecef;
+    border-color: #adb5bd;
+}
+
+.filter-checkbox input[type="checkbox"] {
+    margin: 0;
+    width: 16px;
+    height: 16px;
+}
+
+.btn-resend {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-resend:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+}
+
+.unsent-row {
+    background-color: #fff3cd !important;
+}
+
+.unsent-row:hover {
+    background-color: #ffeaa7 !important;
 }
 
 .history-table-container {
@@ -443,6 +514,23 @@
     transition: border-color 0.3s ease;
 }
 
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: white;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+.form-group select:disabled {
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+    color: #6c757d;
+}
+
 .form-group textarea {
     width: 100%;
     padding: 12px;
@@ -457,7 +545,8 @@
 }
 
 .form-group input:focus,
-.form-group textarea:focus {
+.form-group textarea:focus,
+.form-group select:focus {
     outline: none;
     border-color: #007bff;
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
@@ -694,6 +783,277 @@
     background-color: #f8f9fa;
 }
 
+/* Seção de instruções */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.instructions-btn {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.instructions-btn:hover {
+    background: #e9ecef;
+    border-color: #adb5bd;
+}
+
+.instructions-panel {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+.instructions-panel h5 {
+    margin: 0 0 10px 0;
+    color: #495057;
+    font-size: 14px;
+}
+
+.instructions-panel ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.instructions-panel li {
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.instructions-panel ul ul {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+/* Upload de arquivo */
+.upload-btn.processing {
+    background: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.file-status {
+    margin-top: 10px;
+    padding: 10px;
+    background: #e7f3ff;
+    border: 1px solid #b3d9ff;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+/* Resultado do processamento */
+.spreadsheet-result {
+    margin-top: 15px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.result-summary {
+    background: #f8f9fa;
+    padding: 15px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.result-summary h5 {
+    margin: 0 0 15px 0;
+    color: #495057;
+    font-size: 14px;
+}
+
+.result-stats {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    border-radius: 6px;
+    min-width: 80px;
+}
+
+.stat-item.valid {
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+}
+
+.stat-item.invalid {
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+}
+
+.stat-item.total {
+    background: #e2e3e5;
+    border: 1px solid #d6d8db;
+}
+
+.stat-number {
+    font-size: 18px;
+    font-weight: bold;
+    color: #495057;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #6c757d;
+    text-align: center;
+}
+
+.result-message {
+    margin: 10px 0 0 0;
+    font-size: 14px;
+    color: #495057;
+    font-style: italic;
+}
+
+/* Números inválidos */
+.invalid-numbers {
+    padding: 15px;
+    background: #fff;
+}
+
+.invalid-numbers h6 {
+    margin: 0 0 10px 0;
+    color: #dc3545;
+    font-size: 13px;
+}
+
+.invalid-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.invalid-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px;
+    margin-bottom: 8px;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.invalid-value {
+    font-weight: bold;
+    color: #495057;
+}
+
+.invalid-error {
+    color: #dc3545;
+    font-style: italic;
+}
+
+.more-errors {
+    margin: 10px 0 0 0;
+    font-size: 12px;
+    color: #6c757d;
+    font-style: italic;
+    text-align: center;
+}
+
+/* Aviso de planilha ativa */
+.spreadsheet-override-notice {
+    margin-top: 15px;
+    padding: 12px;
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.spreadsheet-override-notice p {
+    margin: 0;
+    color: #856404;
+}
+
+/* Melhorias gerais */
+.contacts-search input:disabled,
+.select-all input:disabled,
+.contact-item input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.upload-info {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 5px;
+}
+
+/* Botão para reenviar selecionados */
+.btn-resend-selected {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.btn-resend-selected:hover {
+    background: #218838;
+}
+
+.btn-resend-selected:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+}
+
+/* Ações de seleção no histórico */
+.history-selection-actions {
+    background: #f8f9fa;
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    border: 1px solid #dee2e6;
+}
+
+.select-all-history {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    color: #495057;
+    cursor: pointer;
+    margin: 0;
+}
+
+.select-all-history input[type="checkbox"] {
+    margin: 0;
+    cursor: pointer;
+}
+
+/* Ajustes na tabela para acomodar checkboxes */
+.history-table th:first-child,
+.history-table td:first-child {
+    width: 80px;
+    text-align: center;
+}
+
+.history-table input[type="checkbox"] {
+    cursor: pointer;
+    transform: scale(1.1);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .campanhas-container {
@@ -728,4 +1088,161 @@
     .divider::after {
         width: 35%;
     }
+    
+    .btn-resend-selected {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+    
+    .history-selection-actions {
+        padding: 10px 12px;
+    }
+    
+    .select-all-history {
+        font-size: 14px;
+    }
+}
+
+/* Modal de Reenvio */
+.resend-modal {
+    max-width: 600px;
+    width: 90%;
+}
+
+.resend-content {
+    padding: 20px;
+}
+
+.resend-description {
+    margin-bottom: 20px;
+    color: #495057;
+    font-size: 14px;
+}
+
+.no-unsent {
+    text-align: center;
+    padding: 40px 20px;
+    color: #28a745;
+    font-size: 16px;
+}
+
+.unsent-actions {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.select-all-unsent {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: #495057;
+    cursor: pointer;
+}
+
+.select-all-unsent input[type="checkbox"] {
+    margin: 0;
+}
+
+.unsent-contacts-list {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+
+.unsent-contact-item {
+    padding: 12px 15px;
+    border-bottom: 1px solid #f1f3f4;
+    transition: background-color 0.2s;
+}
+
+.unsent-contact-item:last-child {
+    border-bottom: none;
+}
+
+.unsent-contact-item:hover {
+    background-color: #f8f9fa;
+}
+
+.unsent-contact-item label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.unsent-contact-item input[type="checkbox"] {
+    margin: 0;
+}
+
+.unsent-contact-item .contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.unsent-contact-item .contact-info strong {
+    color: #495057;
+    font-size: 14px;
+}
+
+.unsent-contact-item .contact-number {
+    color: #6c757d;
+    font-size: 13px;
+}
+
+.resend-summary {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+
+.resend-summary p {
+    margin: 0;
+    color: #495057;
+    font-size: 14px;
+}
+
+.resend-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+}
+
+.resend-actions button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.resend-actions button:first-child {
+    background-color: #6c757d;
+    color: white;
+}
+
+.resend-actions button:first-child:hover {
+    background-color: #545b62;
+}
+
+.resend-actions .btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.resend-actions .btn-primary:hover:not(:disabled) {
+    background-color: #0056b3;
+}
+
+.resend-actions .btn-primary:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.6;
 }
