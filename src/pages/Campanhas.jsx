@@ -2,6 +2,27 @@ import React, { useState, useEffect } from 'react';
 import { useApi } from '../contexts/ApiContext';
 import { useAuth } from '../components/AuthContext';
 import './Campanhas.css';
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+    ArcElement,
+} from 'chart.js';
+import { Bar, Doughnut } from 'react-chartjs-2';
+
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+    ArcElement
+);
 
 const Campanhas = () => {
     const { 
@@ -59,6 +80,11 @@ const Campanhas = () => {
     // Estados para seleção no histórico
     const [selectedHistoryItems, setSelectedHistoryItems] = useState([]);
     const [showResendFromHistory, setShowResendFromHistory] = useState(false);
+    
+    // Estados para estatísticas
+    const [showStatisticsModal, setShowStatisticsModal] = useState(false);
+    const [statistics, setStatistics] = useState(null);
+    const [loadingStatistics, setLoadingStatistics] = useState(false);
 
     // Carregar pesquisas ao montar o componente
     useEffect(() => {
@@ -486,6 +512,169 @@ const Campanhas = () => {
         }
     };
 
+    // Função para carregar estatísticas
+    const handleViewStatistics = async (pesquisa) => {
+        setSelectedPesquisa(pesquisa);
+        setShowStatisticsModal(true);
+        
+        try {
+            setLoadingStatistics(true);
+            const data = await getSurveyStatistics(pesquisa.id);
+            setStatistics(data);
+        } catch (error) {
+            console.error('Erro ao carregar estatísticas:', error);
+            setStatistics(null);
+            alert('Erro ao carregar estatísticas. Tente novamente.');
+        } finally {
+            setLoadingStatistics(false);
+        }
+    };
+
+    // Função para imprimir estatísticas
+    const handlePrintStatistics = async () => {
+        const printContent = document.querySelector('.statistics-content');
+        
+        // Clonar o conteúdo para não afetar o original
+        const clonedContent = printContent.cloneNode(true);
+        
+        // Encontrar todos os canvas (gráficos) e convertê-los em imagens
+        const canvasElements = printContent.querySelectorAll('canvas');
+        const clonedCanvasContainers = clonedContent.querySelectorAll('.chart-wrapper');
+        
+        // Converter cada canvas em imagem
+        for (let i = 0; i < canvasElements.length; i++) {
+            const canvas = canvasElements[i];
+            const clonedContainer = clonedCanvasContainers[i];
+            
+            if (canvas && clonedContainer) {
+                try {
+                    // Converter canvas para imagem
+                    const imageDataUrl = canvas.toDataURL('image/png', 1.0);
+                    
+                    // Criar elemento de imagem
+                    const img = document.createElement('img');
+                    img.src = imageDataUrl;
+                    img.style.maxWidth = '100%';
+                    img.style.height = 'auto';
+                    img.style.display = 'block';
+                    img.style.margin = '0 auto';
+                    
+                    // Substituir o conteúdo do container clonado pela imagem
+                    clonedContainer.innerHTML = '';
+                    clonedContainer.appendChild(img);
+                } catch (error) {
+                    console.error('Erro ao converter gráfico para imagem:', error);
+                    // Se falhar, manter o container vazio com uma mensagem
+                    clonedContainer.innerHTML = '<p style="text-align: center; color: #666;">Gráfico não disponível para impressão</p>';
+                }
+            }
+        }
+        
+        // Criar uma nova janela para impressão
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>Estatísticas - ${selectedPesquisa?.name}</title>
+                    <style>
+                        body { 
+                            font-family: Arial, sans-serif; 
+                            margin: 20px; 
+                            color: #333;
+                        }
+                        .statistics-summary { 
+                            display: grid; 
+                            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
+                            gap: 15px; 
+                            margin-bottom: 30px; 
+                        }
+                        .stat-card { 
+                            border: 1px solid #dee2e6; 
+                            border-radius: 8px; 
+                            padding: 15px; 
+                            text-align: center; 
+                            background: #f8f9fa;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: space-between;
+                            min-height: 80px;
+                        }
+                        .stat-card h4 { 
+                            margin: 0 0 10px 0; 
+                            font-size: 12px; 
+                            text-transform: uppercase; 
+                            color: #495057;
+                            line-height: 1.3;
+                        }
+                        .stat-number { 
+                            font-size: 24px; 
+                            font-weight: bold; 
+                            color: #333;
+                            line-height: 1;
+                            margin-top: auto;
+                        }
+                        .stat-number.pending { color: #ffc107; }
+                        .stat-number.sent { color: #17a2b8; }
+                        .stat-number.responded { color: #28a745; }
+                        .stat-number.rate { color: #007bff; }
+                        .chart-container { 
+                            margin: 20px 0; 
+                            page-break-inside: avoid;
+                            text-align: center;
+                        }
+                        .chart-container h4 { 
+                            text-align: center; 
+                            margin-bottom: 15px;
+                            color: #333;
+                            font-size: 16px;
+                            font-weight: 600;
+                        }
+                        .chart-wrapper {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            min-height: 300px;
+                        }
+                        .chart-wrapper img {
+                            max-width: 100%;
+                            height: auto;
+                            border: 1px solid #dee2e6;
+                            border-radius: 8px;
+                            background: white;
+                            padding: 10px;
+                        }
+                        h1 { 
+                            text-align: center; 
+                            color: #333; 
+                            margin-bottom: 30px;
+                        }
+                        @media print {
+                            body { margin: 0; }
+                            .chart-container { page-break-inside: avoid; }
+                            .chart-wrapper img { 
+                                max-height: 400px; 
+                                page-break-inside: avoid;
+                            }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h1>📈 Estatísticas: ${selectedPesquisa?.name}</h1>
+                    ${clonedContent.innerHTML}
+                </body>
+            </html>
+        `);
+        
+        printWindow.document.close();
+        printWindow.focus();
+        
+        // Aguardar um pouco mais para garantir que as imagens foram carregadas
+        setTimeout(() => {
+            printWindow.print();
+            printWindow.close();
+        }, 500);
+    };
+
     return (
         <div className="campanhas-container">
             <div className="campanhas-header">
@@ -537,6 +726,12 @@ const Campanhas = () => {
                                     onClick={() => handleViewHistory(pesquisa)}
                                 >
                                     📊 Histórico
+                                </button>
+                                <button 
+                                    className="btn-statistics"
+                                    onClick={() => handleViewStatistics(pesquisa)}
+                                >
+                                    📈 Estatísticas
                                 </button>
                                 <button 
                                     className="btn-delete"
@@ -1085,6 +1280,147 @@ const Campanhas = () => {
                                         </button>
                                     </div>
                                 </>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal de Estatísticas */}
+            {showStatisticsModal && selectedPesquisa && (
+                <div className="modal-overlay">
+                    <div className="modal-content statistics-modal">
+                        <div className="modal-header">
+                            <h3>📈 Estatísticas: {selectedPesquisa.name}</h3>
+                            <div className="modal-header-actions">
+                                <button 
+                                    className="btn-print"
+                                    onClick={handlePrintStatistics}
+                                    disabled={loadingStatistics || !statistics}
+                                    title="Imprimir estatísticas"
+                                >
+                                    🖨️ Imprimir
+                                </button>
+                                <button 
+                                    className="close-btn"
+                                    onClick={() => setShowStatisticsModal(false)}
+                                >
+                                    ×
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div className="statistics-content">
+                            {loadingStatistics ? (
+                                <div className="loading-statistics">
+                                    <p>Carregando estatísticas...</p>
+                                </div>
+                            ) : statistics ? (
+                                <>
+                                    {/* Resumo das estatísticas */}
+                                    <div className="statistics-summary">
+                                        <div className="stat-card">
+                                            <h4>Total de Disparos</h4>
+                                            <span className="stat-number">{statistics.totalDispatches}</span>
+                                        </div>
+                                        <div className="stat-card">
+                                            <h4>Pendentes</h4>
+                                            <span className="stat-number pending">{statistics.pendingDispatches}</span>
+                                        </div>
+                                        <div className="stat-card">
+                                            <h4>Enviados</h4>
+                                            <span className="stat-number sent">{statistics.sentDispatches}</span>
+                                        </div>
+                                        <div className="stat-card">
+                                            <h4>Respondidos</h4>
+                                            <span className="stat-number responded">{statistics.respondedDispatches}</span>
+                                        </div>
+                                        <div className="stat-card">
+                                            <h4>Taxa de Resposta</h4>
+                                            <span className="stat-number rate">{statistics.responseRate?.toFixed(1)}%</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Gráficos */}
+                                    <div className="statistics-charts">
+                                        {/* Gráfico de Status dos Disparos */}
+                                        <div className="chart-container">
+                                            <h4>Status dos Disparos</h4>
+                                            <div className="chart-wrapper">
+                                                <Doughnut
+                                                    data={{
+                                                        labels: ['Pendentes', 'Enviados', 'Respondidos'],
+                                                        datasets: [{
+                                                            data: [
+                                                                statistics.pendingDispatches,
+                                                                statistics.sentDispatches - statistics.respondedDispatches,
+                                                                statistics.respondedDispatches
+                                                            ],
+                                                            backgroundColor: [
+                                                                '#ffc107',
+                                                                '#17a2b8',
+                                                                '#28a745'
+                                                            ],
+                                                            borderWidth: 2,
+                                                            borderColor: '#fff'
+                                                        }]
+                                                    }}
+                                                    options={{
+                                                        responsive: true,
+                                                        maintainAspectRatio: false,
+                                                        plugins: {
+                                                            legend: {
+                                                                position: 'bottom'
+                                                            }
+                                                        }
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Gráfico de Respostas */}
+                                        {statistics.responses && statistics.responses.length > 0 && (
+                                            <div className="chart-container">
+                                                <h4>Distribuição das Respostas</h4>
+                                                <div className="chart-wrapper">
+                                                    <Bar
+                                                        data={{
+                                                            labels: statistics.responses.map(r => r.response),
+                                                            datasets: [{
+                                                                label: 'Quantidade de Respostas',
+                                                                data: statistics.responses.map(r => r.count),
+                                                                backgroundColor: '#007bff',
+                                                                borderColor: '#0056b3',
+                                                                borderWidth: 1
+                                                            }]
+                                                        }}
+                                                        options={{
+                                                            responsive: true,
+                                                            maintainAspectRatio: false,
+                                                            plugins: {
+                                                                legend: {
+                                                                    display: false
+                                                                }
+                                                            },
+                                                            scales: {
+                                                                y: {
+                                                                    beginAtZero: true,
+                                                                    ticks: {
+                                                                        stepSize: 1
+                                                                    }
+                                                                }
+                                                            }
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="no-statistics">
+                                    <p>Não foi possível carregar as estatísticas.</p>
+                                </div>
                             )}
                         </div>
                     </div>
