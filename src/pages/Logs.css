@@ -1,63 +1,325 @@
-/* src/pages/Contacts.css */
+/* src/pages/Logs.css */
 
-.contacts-container {
+.logs-container {
     padding: 20px;
 }
 
-.contacts-container h2 {
+.logs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 20px;
+}
+
+.logs-header h2 {
+    margin: 0;
     color: #333;
 }
 
-.contacts-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
+.logs-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
 }
 
-.contacts-table th, .contacts-table td {
-    padding: 10px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
+.search-input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 250px;
 }
 
-.contacts-table th {
-    background-color: #f8f9fa;
-    color: #333;
-    font-weight: bold;
+.search-input:focus {
+    outline: none;
+    border-color: #007bff;
 }
 
-.contacts-table tr:hover {
-    background-color: #f1f1f1;
-}
-
-.inactivate-button {
-    background-color: #ff4d4d;
+.refresh-button {
+    background-color: #007bff;
     color: white;
     border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
+    padding: 8px 16px;
+    border-radius: 4px;
     cursor: pointer;
+    font-size: 14px;
     transition: background-color 0.3s;
 }
 
-.activate-button {
-    background-color: #149233;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+.refresh-button:hover {
+    background-color: #0056b3;
 }
-.inactivate-button:hover {
-    background-color: #e60000;
-}
-.activate-button:hover {
-    background-color: #149233;
+
+.loading-state, .empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-size: 16px;
 }
 
 .error-message {
-    color: red;
-    margin-top: 10px;
+    color: #dc3545;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.table-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.logs-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.logs-table th {
+    background-color: #f8f9fa;
+    color: #333;
+    font-weight: bold;
+    padding: 12px 10px;
+    text-align: left;
+    border-bottom: 2px solid #dee2e6;
+    white-space: nowrap;
+}
+
+.logs-table th.sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s;
+}
+
+.logs-table th.sortable:hover {
+    background-color: #e9ecef;
+}
+
+.logs-table td {
+    padding: 10px;
+    border-bottom: 1px solid #dee2e6;
+    vertical-align: top;
+}
+
+.logs-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+.date-cell {
+    font-family: monospace;
+    font-size: 12px;
+    min-width: 140px;
+}
+
+.message-id-cell {
+    font-family: monospace;
+    font-size: 12px;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.origin-cell, .type-cell {
+    text-align: center;
+}
+
+.origin-badge, .type-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: white;
+}
+
+.origin-badge {
+    background-color: #6c757d;
+}
+
+.origin-badge.whatsapp {
+    background-color: #25d366;
+}
+
+.origin-badge.telegram {
+    background-color: #0088cc;
+}
+
+.origin-badge.webhook {
+    background-color: #fd7e14;
+}
+
+.type-badge {
+    background-color: #6c757d;
+}
+
+.type-badge.text {
+    background-color: #28a745;
+}
+
+.type-badge.image {
+    background-color: #17a2b8;
+}
+
+.type-badge.audio {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.type-badge.video {
+    background-color: #dc3545;
+}
+
+.type-badge.document {
+    background-color: #6f42c1;
+}
+
+.contact-cell {
+    font-family: monospace;
+    font-size: 13px;
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.return-text-cell {
+    max-width: 200px;
+    font-size: 13px;
+}
+
+.payload-cell {
+    text-align: center;
+}
+
+.view-payload-button {
+    background-color: #17a2b8;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.3s;
+}
+
+.view-payload-button:hover {
+    background-color: #138496;
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #333;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-button:hover {
+    color: #333;
+}
+
+.modal-body {
+    padding: 20px;
+    overflow: auto;
+    flex: 1;
+}
+
+.payload-content {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 15px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    line-height: 1.4;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .logs-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+    
+    .logs-controls {
+        justify-content: space-between;
+    }
+    
+    .search-input {
+        width: 100%;
+        max-width: 200px;
+    }
+    
+    .logs-table {
+        font-size: 12px;
+    }
+    
+    .logs-table th,
+    .logs-table td {
+        padding: 8px 6px;
+    }
+    
+    .modal-content {
+        width: 95%;
+        max-height: 90vh;
+    }
+    
+    .modal-header,
+    .modal-body {
+        padding: 15px;
+    }
 }

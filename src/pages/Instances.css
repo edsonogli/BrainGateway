@@ -1,7 +1,14 @@
 /* src/pages/Contacts.css */
 
-.contacts-container {
+/* src/pages/Instances.css */
+
+.instances-container {
     padding: 20px;
+}
+
+.instances-container h2 {
+    margin-bottom: 20px;
+    color: #333;
 }
 
 .header-container {
@@ -11,72 +18,193 @@
     margin-bottom: 20px;
 }
 
-.contacts-container h2 {
-    margin: 0;
-    color: #333;
+.header-actions {
+    display: flex;
+    gap: 10px;
 }
 
-.add-instance-button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
-    border: none;
+.add-instance-button,
+.refresh-button {
     border-radius: 4px;
+    border: 1px solid #ddd;
+    padding: 0.6em 1.2em;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: inherit;
+    background-color: #f9f9f9;
     cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s;
+    transition: border-color 0.25s, background-color 0.25s;
 }
 
-.add-instance-button:hover {
-    background-color: #45a049;
+.add-instance-button:hover,
+.refresh-button:hover {
+    border-color: #646cff;
+    background-color: #f0f0f0;
 }
 
-.contacts-table {
+.loading-message {
+    text-align: center;
+    padding: 40px 20px;
+    font-size: 16px;
+    color: #666;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.empty-state p {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+/* Container com overflow para a tabela */
+.table-container {
+    max-height: 60vh;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.instances-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
+    margin: 0;
 }
 
-.contacts-table th, .contacts-table td {
-    padding: 10px;
+.instances-table th,
+.instances-table td {
+    padding: 12px;
     text-align: left;
     border-bottom: 1px solid #ddd;
 }
 
-.contacts-table th {
+.instances-table th {
     background-color: #f8f9fa;
     color: #333;
     font-weight: bold;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
-.contacts-table tr:hover {
+.sortable-header {
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s ease;
+}
+
+.sortable-header:hover {
+    background-color: #e9ecef;
+}
+
+.instances-table tr:hover {
     background-color: #f1f1f1;
 }
 
-.inactivate-button {
-    background-color: #ff4d4d;
-    color: white;
-    border: none;
+.instances-table tr:last-child td {
+    border-bottom: none;
+}
+
+.instance-name {
+    font-weight: 600;
+    color: #333;
+}
+
+.instance-number {
+    font-family: 'Courier New', monospace;
+    background-color: #f8f9fa;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #495057;
+    display: inline-block;
+}
+
+.profile-info {
+    color: #666;
+}
+
+.project-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.project-name {
+    font-weight: 600;
+    color: #333;
+}
+
+.project-code {
+    font-size: 12px;
+    color: #666;
+    font-style: italic;
+}
+
+.status-badge {
     padding: 5px 10px;
     border-radius: 5px;
+    font-size: 12px;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.status-connected {
+    background-color: #28a745;
+    color: white;
+}
+
+.status-disconnected {
+    background-color: #dc3545;
+    color: white;
+}
+
+.status-unknown {
+    background-color: #6c757d;
+    color: white;
+}
+
+.last-activity {
+    font-size: 13px;
+    color: #666;
+    font-family: 'Courier New', monospace;
+}
+
+.instance-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.action-button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
     cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
     transition: background-color 0.3s;
 }
 
-.activate-button {
-    background-color: #149233;
+.disconnect-button {
+    background-color: #ff4d4d;
     color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
 }
-.inactivate-button:hover {
+
+.disconnect-button:hover {
     background-color: #e60000;
 }
-.activate-button:hover {
+
+.reconnect-button {
     background-color: #149233;
+    color: white;
+}
+
+.reconnect-button:hover {
+    background-color: #0f7a2a;
 }
 
 .error-message {

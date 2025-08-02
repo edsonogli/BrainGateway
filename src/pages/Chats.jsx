@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useApi } from '../contexts/ApiContext';
 import { useAuth } from '../components/AuthContext';
 import { debugLog, debugError, checkApiConnection } from '../config';
+import { processImageUrl } from '../utils/imageUtils';
 import './Chats.css';
 
 const Chats = () => {
@@ -24,6 +25,18 @@ const Chats = () => {
     const [newMessage, setNewMessage] = useState('');
     const messagesEndRef = useRef(null);
     const { sendMessage } = useApi();
+
+    // Estado derivado que combina chatNumbers com dados dos contatos
+    const enrichedChatNumbers = chatNumbers.map(chatNumber => {
+        const contact = contacts.find(c => c.number === chatNumber.number);
+        return {
+            ...chatNumber,
+            name: contact?.name || chatNumber.name,
+            urlImage: contact?.urlImage || chatNumber.urlImage,
+            active: contact?.active !== undefined ? contact.active : true,
+            contactId: contact?.id || null
+        };
+    });
     const handleSendMessage = async () => {
         if (!newMessage.trim()) return;
 
@@ -416,8 +429,8 @@ const Chats = () => {
                     {isLoading ? (
                         <li className="loading">Carregando conversas...</li>
                     ) : userData?.isAdmin && selectedProject ? (
-                        chatNumbers.length > 0 ? (
-                        chatNumbers
+                        enrichedChatNumbers.length > 0 ? (
+                        enrichedChatNumbers
                             .filter(({ name, number, requiresAction }) => {
                                 // Filtro de busca por texto
                                 const matchesSearch = !searchTerm ||
@@ -439,7 +452,7 @@ const Chats = () => {
                                     <>
                                         <img
                                         className="contact-avatar"
-                                        src={urlImage}
+                                        src={processImageUrl(urlImage)}
                                         alt={name || number}
                                         onError={(e) => {
                                             e.target.style.display = 'none';
@@ -474,8 +487,8 @@ const Chats = () => {
                         ) : (
                         <li className="no-chats">Nenhum número encontrado para este projeto</li>
                         )
-                    ) : chatNumbers.length > 0 ? (
-                    chatNumbers
+                    ) : enrichedChatNumbers.length > 0 ? (
+                    enrichedChatNumbers
                         .filter(({ name, number, requiresAction }) => {
                             // Filtro de busca por texto
                             const matchesSearch = !searchTerm ||
@@ -498,7 +511,7 @@ const Chats = () => {
                                     <>
                                         <img
                                         className="contact-avatar"
-                                        src={urlImage}
+                                        src={processImageUrl(urlImage)}
                                         alt={name || number}
                                         onError={(e) => {
                                             e.target.style.display = 'none';
@@ -572,7 +585,7 @@ const Chats = () => {
                                             {msg.imagemUrl && (
                                                 <div className="message-image">
                                                     <img
-                                                    src={msg.imagemUrl}
+                                                    src={processImageUrl(msg.imagemUrl)}
                                                     alt="Imagem da mensagem"
                                                     onError={(e) => {
                                                         e.target.style.display = 'none';
@@ -594,7 +607,7 @@ const Chats = () => {
                                                     const fallback = e.target.nextSibling;
                                                     if (fallback) fallback.style.display = 'block';
                                                     }}>
-                                                    <source src={msg.audioUrl} type="audio/mpeg" />
+                                                    <source src={processImageUrl(msg.audioUrl)} type="audio/mpeg" />
                                                     Seu navegador não suporta o elemento de áudio.
                                                     </audio>
                                                     <div style={{ display: 'none', color: '#888' }}>

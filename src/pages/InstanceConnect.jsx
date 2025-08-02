@@ -48,32 +48,22 @@ const InstanceConnect = () => {
             setQrCode('');
             const response = await connectInstance({ projectId: selectedProject });
             
-            // Debug: log da resposta para entender o que está sendo retornado
-            console.log('Response from connectInstance:', response);
-            console.log('Response type:', typeof response);
-            console.log('Response status:', response?.status);
-            
             // Verifica se a resposta indica status 204 (já conectado ou sem conexões)
             if (response && response.status === 204) {
-                console.log('Setting info message:', response.message);
                 setInfoMessage(response.message);
                 setQrCode(''); // Limpa qualquer QR code anterior
             } else if (response && typeof response === 'string') {
                 // Se a resposta é uma string (QR code)
-                console.log('Setting QR code from string response');
                 setQrCode(response);
                 setInfoMessage(null);
             } else if (response) {
                 // Se a resposta é um objeto com dados do QR code
-                console.log('Setting QR code from object response');
                 setQrCode(response);
                 setInfoMessage(null);
             } else {
-                console.log('Invalid response received');
                 setError('Resposta inválida do servidor');
             }
         } catch (err) {
-            console.error('Error in handleConnect:', err);
             handleError(err, 'Falha ao conectar instância');
         } finally {
             setLoading(false);

@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useApi } from '../contexts/ApiContext';
-import { debugError } from '../config';
+import { useAuth } from '../components/AuthContext';
+import { debugLog, debugError } from '../config';
+import { processImageUrl } from '../utils/imageUtils';
 import './Contacts.css';
 
 const Contacts = () => {
-    const { getContacts, InativeContact, AtiveContact, InativeContactsBatch, AtiveContactsBatch } = useApi();
+    const { getContacts, InativeContact, AtiveContact, InativeContactsBatch, AtiveContactsBatch, resetThread } = useApi();
+    const { userData } = useAuth();
     const [contacts, setContacts] = useState([]);
     const [filteredContacts, setFilteredContacts] = useState([]); // Para armazenar os contatos filtrados
     const [searchTerm, setSearchTerm] = useState(''); // Estado para o termo de busca
@@ -180,6 +183,27 @@ const Contacts = () => {
         }
     };
 
+    const handleResetThread = async (contact) => {
+        if (!userData?.isAdmin) {
+            setError('Apenas administradores podem resetar threads');
+            return;
+        }
+
+        if (!window.confirm(`Tem certeza que deseja resetar a thread do contato ${contact.name || contact.number}?`)) {
+            return;
+        }
+
+        try {
+            await resetThread(contact.number, contact.projectId);
+            setError(null);
+            // Você pode adicionar uma mensagem de sucesso aqui se desejar
+            alert('Thread resetada com sucesso!');
+        } catch (err) {
+            setError('Erro ao resetar thread');
+            debugError('Erro ao resetar thread:', err);
+        }
+    };
+
     return (
         <div className="contacts-container">
             <h2>Contatos</h2>
@@ -259,6 +283,7 @@ const Contacts = () => {
                             >
                                 Atualizado em {getSortIcon('updatedAt')}
                             </th>
+                            {userData?.isAdmin && <th>Ações</th>}
                         </tr>
                     </thead>
                     <tbody>
@@ -281,7 +306,7 @@ const Contacts = () => {
                                     <div className="contact-photo">
                                         {contact.urlImage ? (
                                             <img 
-                                                src={contact.urlImage} 
+                                                src={processImageUrl(contact.urlImage)} 
                                                 alt={contact.name || contact.number}
                                                 className="contact-image"
                                                 onError={(e) => {
@@ -307,6 +332,17 @@ const Contacts = () => {
                                 <td>
                                     {contact.updatedAt ? new Date(contact.updatedAt).toLocaleString('pt-BR') : 'N/A'}
                                 </td>
+                                {userData?.isAdmin && (
+                                    <td>
+                                        <button
+                                            onClick={() => handleResetThread(contact)}
+                                            className="reset-thread-button"
+                                            title="Resetar Thread"
+                                        >
+                                            🔄
+                                        </button>
+                                    </td>
+                                )}
                             </tr>
                         ))}
                     </tbody>

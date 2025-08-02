@@ -353,6 +353,10 @@ export const ApiProvider = ({ children }) => {
         withLoading(() => api.post(`/survey/${surveyId}/send-messages`, { numbers }).then(response => response.data)),
     [withLoading]);
 
+    const resetThread = useCallback((number, projectId) => 
+        withLoading(() => api.get(`/Brain/ResetThread?number=${number}&projectId=${projectId}`).then(response => response.data)),
+    [withLoading]);
+
     const value = {
         login,
         getContacts,
@@ -398,6 +402,7 @@ export const ApiProvider = ({ children }) => {
         getSurveyStatistics,
         processSurveySpreadsheet,
         sendSurveyMessages,
+        resetThread,
         isLoading
     };
 

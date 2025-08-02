@@ -42,21 +42,19 @@
     font-size: 1.1rem;
     color: #333;
     font-weight: 600;
-    gap: 12px;
-    padding: 8px;
+    gap: 8px;
 }
 
 /* Estilo dos inputs */
 .project-details-container input,
 .project-details-container select {
     width: 100%;
-    padding: 18px 20px;
+    padding: 14px 16px;
     border: 2px solid #e1e5e9;
-    border-radius: 10px;
-    font-size: 1.1rem;
+    border-radius: 8px;
+    font-size: 1rem;
     transition: all 0.3s ease;
     background-color: #fafbfc;
-    min-height: 24px;
 }
 
 .project-details-container input:focus,
