@@ -220,8 +220,19 @@ export const ApiProvider = ({ children }) => {
         withLoading(() => api.get(`/Brain/ChatsControlLog?number=${number}`).then(response => response.data)),
     [withLoading]);
 
-    const connectInstance = useCallback(({ projectId, instanceName }) => 
-        withLoading(() => api.get(`/Wpp/InstanceConnect?project=${projectId}&instanceName=${instanceName}`).then(response => response.data)),
+    const connectInstance = useCallback(({ projectId }) => 
+        withLoading(async () => {
+            try {
+                const response = await api.get(`/Wpp/InstanceConnect?project=${projectId}`);
+                return response.data;
+            } catch (error) {
+                if (error.response?.status === 204) {
+                    // Retorna um objeto especial para indicar que já está conectado
+                    return { status: 204, message: 'Instância já está conectada ou não há conexões disponíveis para este projeto' };
+                }
+                throw error;
+            }
+        }),
     [withLoading]);
 
     const getNotifications = useCallback(() => 

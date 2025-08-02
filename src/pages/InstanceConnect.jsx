@@ -6,9 +6,9 @@ const InstanceConnect = () => {
     const { connectInstance, getProjects } = useApi();
     const [projects, setProjects] = useState([]);
     const [selectedProject, setSelectedProject] = useState('');
-    const [instanceName, setInstanceName] = useState('');
     const [qrCode, setQrCode] = useState('');
     const [error, setError] = useState(null);
+    const [infoMessage, setInfoMessage] = useState(null);
     const [loading, setLoading] = useState(false);
 
     const handleError = (err, message) => {
@@ -36,19 +36,44 @@ const InstanceConnect = () => {
     }, [getProjects]);
 
     const handleConnect = async () => {
-        if (!selectedProject || !instanceName) {
-            setError('Por favor, preencha todos os campos');
+        if (!selectedProject) {
+            setError('Por favor, selecione um projeto');
             return;
         }
 
         try {
             setLoading(true);
             setError(null);
-            const base64Response = await connectInstance({ projectId: selectedProject, instanceName });
-            if (base64Response) {
-                setQrCode(base64Response);
+            setInfoMessage(null);
+            setQrCode('');
+            const response = await connectInstance({ projectId: selectedProject });
+            
+            // Debug: log da resposta para entender o que está sendo retornado
+            console.log('Response from connectInstance:', response);
+            console.log('Response type:', typeof response);
+            console.log('Response status:', response?.status);
+            
+            // Verifica se a resposta indica status 204 (já conectado ou sem conexões)
+            if (response && response.status === 204) {
+                console.log('Setting info message:', response.message);
+                setInfoMessage(response.message);
+                setQrCode(''); // Limpa qualquer QR code anterior
+            } else if (response && typeof response === 'string') {
+                // Se a resposta é uma string (QR code)
+                console.log('Setting QR code from string response');
+                setQrCode(response);
+                setInfoMessage(null);
+            } else if (response) {
+                // Se a resposta é um objeto com dados do QR code
+                console.log('Setting QR code from object response');
+                setQrCode(response);
+                setInfoMessage(null);
+            } else {
+                console.log('Invalid response received');
+                setError('Resposta inválida do servidor');
             }
         } catch (err) {
+            console.error('Error in handleConnect:', err);
             handleError(err, 'Falha ao conectar instância');
         } finally {
             setLoading(false);
@@ -59,33 +84,23 @@ const InstanceConnect = () => {
         <div className="instance-connect-container">
             <h2>Conectar Nova Instância</h2>
             
-            <div className="form-group">
-                <label htmlFor="project">Selecione o Projeto:</label>
-                <select
-                    id="project"
-                    value={selectedProject}
-                    onChange={(e) => setSelectedProject(e.target.value)}
-                    className="project-select"
-                >
-                    <option value="">Selecione um projeto...</option>
-                    {Array.isArray(projects) && projects.map((project) => (
-                        <option key={project.id} value={project.id}>
-                            {project.code} - {project.name}
-                        </option>
-                    ))}
-                </select>
-            </div>
-
-            <div className="form-group">
-                <label htmlFor="instanceName">Nome da Instância:</label>
-                <input
-                    type="text"
-                    id="instanceName"
-                    value={instanceName}
-                    onChange={(e) => setInstanceName(e.target.value)}
-                    className="instance-name-input"
-                    placeholder="Digite o nome da instância"
-                />
+            <div className="form-section">
+                <div className="form-group">
+                    <label htmlFor="project">Selecione o Projeto:</label>
+                    <select
+                        id="project"
+                        value={selectedProject}
+                        onChange={(e) => setSelectedProject(e.target.value)}
+                        className="project-select"
+                    >
+                        <option value="">Selecione um projeto...</option>
+                        {Array.isArray(projects) && projects.map((project) => (
+                            <option key={project.id} value={project.id}>
+                                {project.code} - {project.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
             </div>
 
             <button
@@ -97,6 +112,7 @@ const InstanceConnect = () => {
             </button>
 
             {error && <p className="error-message">{error}</p>}
+            {infoMessage && <p className="info-message">{infoMessage}</p>}
 
             {qrCode && (
                 <div className="qr-code-container">

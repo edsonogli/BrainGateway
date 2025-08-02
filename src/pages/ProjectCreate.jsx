@@ -6,13 +6,30 @@ import './ProjectCreate.css';
 
 const ProjectCreate = () => {
     const { createProject } = useApi(); // Função que chamará a API para criar o projeto
-    const [project, setProject] = useState({ name: '', number: '', active: true });
+    const [project, setProject] = useState({ 
+        name: '', 
+        projectId: '',
+        number: '', 
+        assistantId: '',
+        instance: '',
+        wppService: '',
+        active: true, 
+        allowAudio: false, 
+        autoNotification: false 
+    });
     const [error, setError] = useState(null);
     const navigate = useNavigate();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setProject((prevProject) => ({ ...prevProject, [name]: value }));
+        let convertedValue = value;
+        
+        // Converter strings para booleanos para os campos específicos
+        if (name === 'active' || name === 'allowAudio' || name === 'autoNotification') {
+            convertedValue = value === 'true';
+        }
+        
+        setProject((prevProject) => ({ ...prevProject, [name]: convertedValue }));
     };
 
     const handleSubmit = async (e) => {
@@ -42,11 +59,11 @@ const ProjectCreate = () => {
                     />
                 </label>
                 <label>
-                    Número Projeto:
+                    ID do Projeto:
                     <input
                         type="text"
-                        name="projectid"
-                        value={project.projectid}
+                        name="projectId"
+                        value={project.projectId}
                         onChange={handleChange}
                         required
                     />
@@ -66,7 +83,7 @@ const ProjectCreate = () => {
                     <input
                         type="text"
                         name="assistantId"
-                        value={project.assistantId}
+                        value={project.assistantId || ''}
                         onChange={handleChange}
                     />
                 </label>
@@ -75,7 +92,7 @@ const ProjectCreate = () => {
                     <input
                         type="text"
                         name="instance"
-                        value={project.instance}
+                        value={project.instance || ''}
                         onChange={handleChange}
                     />
                 </label>
@@ -84,13 +101,27 @@ const ProjectCreate = () => {
                     <input
                         type="text"
                         name="wppService"
-                        value={project.wppService}
+                        value={project.wppService || ''}
                         onChange={handleChange}
                     />
                 </label>
                 <label>
                     Ativo:
                     <select name="active" value={project.active} onChange={handleChange}>
+                        <option value={true}>Sim</option>
+                        <option value={false}>Não</option>
+                    </select>
+                </label>
+                <label>
+                    Permitir Áudio:
+                    <select name="allowAudio" value={project.allowAudio} onChange={handleChange}>
+                        <option value={true}>Sim</option>
+                        <option value={false}>Não</option>
+                    </select>
+                </label>
+                <label>
+                    Notificação Automática:
+                    <select name="autoNotification" value={project.autoNotification} onChange={handleChange}>
                         <option value={true}>Sim</option>
                         <option value={false}>Não</option>
                     </select>

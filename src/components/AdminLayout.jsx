@@ -86,7 +86,7 @@ const AdminLayout = () => {
                             className={isActiveLink('/admin/instances/connect') ? 'active' : ''}
                         >
                             <span className="nav-icon">🔗</span>
-                            Conectar Nova Instância
+                            Conectar
                         </Link>
                     )}
                     {shouldShowMenu('/admin/assistants') && (
@@ -106,7 +106,7 @@ const AdminLayout = () => {
                             className={isActiveLink('/admin/settings') ? 'active' : ''}
                         >
                             <span className="nav-icon">⚙️</span>
-                            Settings
+                            Configurações
                         </Link>
                     )}
                     {shouldShowMenu('/admin/projects') && (

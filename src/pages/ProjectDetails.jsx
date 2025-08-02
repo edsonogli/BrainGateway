@@ -27,7 +27,14 @@ const ProjectDetails = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setProject((prevProject) => ({ ...prevProject, [name]: value }));
+        let convertedValue = value;
+        
+        // Converter strings para booleanos para os campos específicos
+        if (name === 'active' || name === 'allowAudio' || name === 'autoNotification') {
+            convertedValue = value === 'true';
+        }
+        
+        setProject((prevProject) => ({ ...prevProject, [name]: convertedValue }));
     };
 
     const handleSave = async () => {
@@ -54,7 +61,7 @@ const ProjectDetails = () => {
                     <input
                         type="text"
                         name="name"
-                        value={project.name}
+                        value={project.name || ''}
                         onChange={handleChange}
                     />
                 </label>
@@ -63,7 +70,7 @@ const ProjectDetails = () => {
                     <input
                         type="text"
                         name="number"
-                        value={project.number}
+                        value={project.number || ''}
                         onChange={handleChange}
                     />
                 </label>
@@ -72,7 +79,7 @@ const ProjectDetails = () => {
                     <input
                         type="text"
                         name="assistantId"
-                        value={project.assistantId}
+                        value={project.assistantId || ''}
                         onChange={handleChange}
                     />
                 </label>
@@ -81,7 +88,7 @@ const ProjectDetails = () => {
                     <input
                         type="text"
                         name="instance"
-                        value={project.instance}
+                        value={project.instance || ''}
                         onChange={handleChange}
                     />
                 </label>
@@ -90,7 +97,7 @@ const ProjectDetails = () => {
                     <input
                         type="text"
                         name="wppService"
-                        value={project.wppService}
+                        value={project.wppService || ''}
                         onChange={handleChange}
                     />
                 </label>
@@ -99,6 +106,28 @@ const ProjectDetails = () => {
                     <select
                         name="active"
                         value={project.active}
+                        onChange={handleChange}
+                    >
+                        <option value={true}>Sim</option>
+                        <option value={false}>Não</option>
+                    </select>
+                </label>
+                <label>
+                    Permitir Áudio:
+                    <select
+                        name="allowAudio"
+                        value={project.allowAudio || false}
+                        onChange={handleChange}
+                    >
+                        <option value={true}>Sim</option>
+                        <option value={false}>Não</option>
+                    </select>
+                </label>
+                <label>
+                    Notificação Automática:
+                    <select
+                        name="autoNotification"
+                        value={project.autoNotification || false}
                         onChange={handleChange}
                     >
                         <option value={true}>Sim</option>
