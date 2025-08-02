@@ -166,6 +166,14 @@
     border: 1px solid #d1d5db;
 }
 
+.word-tag.number {
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    color: #2563eb;
+    border: 1px solid #93c5fd;
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+}
+
 .remove-word {
     background: none;
     border: none;

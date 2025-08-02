@@ -369,6 +369,15 @@ export const ApiProvider = ({ children }) => {
         withLoading(() => api.get(`/Brain/ResetThread?number=${number}&projectId=${projectId}`).then(response => response.data)),
     [withLoading]);
 
+    // Funções para números permitidos
+    const getAllowedNumbers = useCallback(() => 
+        withLoading(() => api.get('/Brain/AllowNumbers').then(response => response.data)),
+    [withLoading]);
+
+    const setAllowedNumbers = useCallback((numbers) => 
+        withLoading(() => api.post('/Brain/AllowNumbers', { numbers }).then(response => response.data)),
+    [withLoading]);
+
     const value = {
         login,
         getContacts,
@@ -417,6 +426,8 @@ export const ApiProvider = ({ children }) => {
         processSurveySpreadsheet,
         sendSurveyMessages,
         resetThread,
+        getAllowedNumbers,
+        setAllowedNumbers,
         isLoading
     };
 

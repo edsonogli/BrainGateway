@@ -61,6 +61,7 @@ const AdminLayout = () => {
                     <h1>OChatPro</h1>
                 </div>
                 <nav className="sidebar-nav">
+                    {/* Dashboard - Visão Geral */}
                     <Link 
                         to="/admin/dashboard" 
                         onClick={toggleSidebar}
@@ -69,6 +70,8 @@ const AdminLayout = () => {
                         <span className="nav-icon">📊</span>
                         Dashboard
                     </Link>
+
+                    {/* Seção de Configuração e Administração */}
                     {shouldShowMenu('/admin/instances') && (
                         <Link 
                             to="/admin/instances" 
@@ -99,26 +102,16 @@ const AdminLayout = () => {
                             Assistentes
                         </Link>
                     )}
-                    {shouldShowMenu('/admin/settings') && (
-                        <Link 
-                            to="/admin/settings" 
-                            onClick={toggleSidebar}
-                            className={isActiveLink('/admin/settings') ? 'active' : ''}
-                        >
-                            <span className="nav-icon">⚙️</span>
-                            Configurações
-                        </Link>
-                    )}
-                    {shouldShowMenu('/admin/projects') && (
-                        <Link 
-                            to="/admin/projects" 
-                            onClick={toggleSidebar}
-                            className={isActiveLink('/admin/projects') ? 'active' : ''}
-                        >
-                            <span className="nav-icon">📁</span>
-                            Projetos
-                        </Link>
-                    )}
+
+                    {/* Seção de Comunicação */}
+                    <Link 
+                        to="/admin/chats" 
+                        onClick={toggleSidebar}
+                        className={isActiveLink('/admin/chats') ? 'active' : ''}
+                    >
+                        <span className="nav-icon">💬</span>
+                        Chats
+                    </Link>
                     <Link 
                         to="/admin/contacts" 
                         onClick={toggleSidebar}
@@ -132,25 +125,21 @@ const AdminLayout = () => {
                         onClick={toggleSidebar}
                         className={isActiveLink('/admin/campanhas') ? 'active' : ''}
                     >
-                        <span className="nav-icon">📊</span>
+                        <span className="nav-icon">📢</span>
                         Campanhas
                     </Link>
-                    <Link 
-                        to="/admin/chats" 
-                        onClick={toggleSidebar}
-                        className={isActiveLink('/admin/chats') ? 'active' : ''}
-                    >
-                        <span className="nav-icon">💬</span>
-                        Chats
-                    </Link>
-                    <Link 
-                        to="/admin/notifications" 
-                        onClick={toggleSidebar}
-                        className={isActiveLink('/admin/notifications') ? 'active' : ''}
-                    >
-                        <span className="nav-icon">🔔</span>
-                        Notificações
-                    </Link>
+
+                    {/* Seção de Gestão */}
+                    {shouldShowMenu('/admin/projects') && (
+                        <Link 
+                            to="/admin/projects" 
+                            onClick={toggleSidebar}
+                            className={isActiveLink('/admin/projects') ? 'active' : ''}
+                        >
+                            <span className="nav-icon">📁</span>
+                            Projetos
+                        </Link>
+                    )}
                     <Link 
                         to="/admin/schedules" 
                         onClick={toggleSidebar}
@@ -160,6 +149,16 @@ const AdminLayout = () => {
                         Agendamentos
                     </Link>
                     <Link 
+                        to="/admin/notifications" 
+                        onClick={toggleSidebar}
+                        className={isActiveLink('/admin/notifications') ? 'active' : ''}
+                    >
+                        <span className="nav-icon">🔔</span>
+                        Notificações
+                    </Link>
+
+                    {/* Seção de Monitoramento */}
+                    <Link 
                         to="/admin/logs" 
                         onClick={toggleSidebar}
                         className={isActiveLink('/admin/logs') ? 'active' : ''}
@@ -167,6 +166,18 @@ const AdminLayout = () => {
                         <span className="nav-icon">📋</span>
                         Logs
                     </Link>
+
+                    {/* Configurações - Sempre por último */}
+                    {shouldShowMenu('/admin/settings') && (
+                        <Link 
+                            to="/admin/settings" 
+                            onClick={toggleSidebar}
+                            className={isActiveLink('/admin/settings') ? 'active' : ''}
+                        >
+                            <span className="nav-icon">⚙️</span>
+                            Configurações
+                        </Link>
+                    )}
                 </nav>
             </aside>
 
