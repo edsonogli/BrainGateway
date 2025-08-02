@@ -149,8 +149,10 @@ export const ApiProvider = ({ children }) => {
 
     const updateProject = useCallback((projectId, updatedData) => 
         withLoading(() => {
-            var isTrueSet = (updatedData.active === 'true');
-            updatedData.active = isTrueSet;
+            // Garantir que o campo active seja um boolean
+            if (typeof updatedData.active === 'string') {
+                updatedData.active = updatedData.active === 'true';
+            }
             return api.put(`/Brain/Project`, updatedData).then(response => response.data);
         }),
     [withLoading]);
