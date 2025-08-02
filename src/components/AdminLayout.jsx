@@ -31,10 +31,9 @@ const AdminLayout = () => {
 
     // Lista de menus que requerem permissão de administrador
     const adminOnlyMenus = [
-        '/admin/settings',
+        '/admin/logs',
         '/admin/projects',
-        '/admin/instances',
-        '/admin/instances/connect'
+        '/admin/instances'
     ];
 
     // Função para verificar se um menu deve ser exibido
