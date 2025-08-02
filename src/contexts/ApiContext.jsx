@@ -178,6 +178,18 @@ export const ApiProvider = ({ children }) => {
         withLoading(() => api.get('/Wpp/Instances').then(response => response.data)),
     [withLoading]);
 
+    const createInstance = useCallback((instanceName, number) => 
+        withLoading(() => api.post(`/Wpp/Instance?instanceName=${encodeURIComponent(instanceName)}&number=${encodeURIComponent(number)}`).then(response => response.data)),
+    [withLoading]);
+
+    const setWebhook = useCallback((instanceName, webhookUrl, token) => 
+        withLoading(() => api.post('/Wpp/SetWebhook', {
+            instanceName,
+            webhookUrl,
+            token
+        }).then(response => response.data)),
+    [withLoading]);
+
     const getChats = useCallback((number, projectId, since) => {
         const params = { number };
         if (projectId) params.projectId = projectId;
@@ -372,6 +384,8 @@ export const ApiProvider = ({ children }) => {
         getAssistants,
         updateAssistant,
         getInstances,
+        createInstance,
+        setWebhook,
         getChats,
         getChatsSilent,
         getChatsNumbers,

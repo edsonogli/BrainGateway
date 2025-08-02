@@ -6,14 +6,22 @@ import { debugError } from '../config';
 import './Instances.css';
 
 const Instances = () => {
-    const { getInstances, getProjects } = useApi();
+    const { getInstances, getProjects, createInstance, setWebhook } = useApi();
     const { userData } = useAuth();
     const navigate = useNavigate();
     const [instances, setInstances] = useState([]);
     const [projects, setProjects] = useState([]);
-    const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [instanceName, setInstanceName] = useState('');
+    const [number, setNumber] = useState('');
+    const [creating, setCreating] = useState(false);
+    const [showWebhookModal, setShowWebhookModal] = useState(false);
+    const [selectedInstance, setSelectedInstance] = useState(null);
+    const [webhookUrl, setWebhookUrl] = useState('');
+    const [settingWebhook, setSettingWebhook] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -123,6 +131,75 @@ const Instances = () => {
         }
     };
 
+    const handleCreateInstance = async (e) => {
+        e.preventDefault();
+        
+        if (!instanceName.trim()) {
+            setError('Nome da instância é obrigatório');
+            return;
+        }
+
+        if (!number.trim()) {
+            setError('Número é obrigatório');
+            return;
+        }
+
+        try {
+            setCreating(true);
+            setError(null);
+
+            await createInstance(instanceName, number);
+
+            // Sucesso - fechar modal e atualizar lista
+            setShowCreateModal(false);
+            setInstanceName('');
+            setNumber('');
+            await handleRefresh();
+            
+        } catch (err) {
+            setError(`Erro ao criar instância: ${err.message}`);
+            debugError('Erro ao criar instância:', err);
+        } finally {
+            setCreating(false);
+        }
+    };
+
+    const handleWebhookClick = (instance) => {
+        setSelectedInstance(instance);
+        setWebhookUrl('');
+        setShowWebhookModal(true);
+        setError(null);
+    };
+
+    const handleSetWebhook = async () => {
+        if (!webhookUrl.trim()) {
+            setError('URL do webhook é obrigatória');
+            return;
+        }
+
+        if (!selectedInstance?.token) {
+            setError('Token da instância não encontrado');
+            return;
+        }
+
+        setSettingWebhook(true);
+        setError('');
+
+        try {
+            await setWebhook(selectedInstance.instanceName, webhookUrl, selectedInstance.token);
+            
+            setShowWebhookModal(false);
+            setWebhookUrl('');
+            setSelectedInstance(null);
+            // Opcional: atualizar a lista se necessário
+            // await handleRefresh();
+        } catch (err) {
+            setError(`Erro ao configurar webhook: ${err.message}`);
+        } finally {
+            setSettingWebhook(false);
+        }
+    };
+
     if (loading) {
         return (
             <div className="instances-container">
@@ -139,8 +216,8 @@ const Instances = () => {
                     <button onClick={handleRefresh} className="refresh-button" title="Atualizar">
                         🔄 Atualizar
                     </button>
-                    <button onClick={handleConnectNew} className="add-instance-button">
-                        ➕ Nova Instância
+                    <button onClick={() => setShowCreateModal(true)} className="add-instance-button">
+                        ➕ Criar Instância
                     </button>
                 </div>
             </div>
@@ -150,8 +227,8 @@ const Instances = () => {
             {instances.length === 0 ? (
                 <div className="empty-state">
                     <p>Nenhuma instância encontrada.</p>
-                    <button onClick={handleConnectNew} className="add-instance-button">
-                        Conectar primeira instância
+                    <button onClick={() => setShowCreateModal(true)} className="add-instance-button">
+                        Criar primeira instância
                     </button>
                 </div>
             ) : (
@@ -177,6 +254,7 @@ const Instances = () => {
                                 >
                                     Nome do Perfil {getSortIcon('profileName')}
                                 </th>
+                                <th>Token</th>
                                 <th 
                                     className="sortable-header" 
                                     onClick={() => handleSort('projectInfo')}
@@ -213,6 +291,17 @@ const Instances = () => {
                                         <td>
                                             <div className="profile-info">
                                                 {instance.profileName || 'N/A'}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div className="token-info">
+                                                {instance.token ? (
+                                                    <span className="token-display" title={instance.token}>
+                                                        {instance.token.substring(0, 12)}...
+                                                    </span>
+                                                ) : (
+                                                    <span className="token-empty">N/A</span>
+                                                )}
                                             </div>
                                         </td>
                                         <td>
@@ -256,6 +345,13 @@ const Instances = () => {
                                                             🔄 Reconectar
                                                         </button>
                                                     )}
+                                                    <button 
+                                                        className="action-button webhook-button"
+                                                        onClick={() => handleWebhookClick(instance)}
+                                                        title="Configurar webhook"
+                                                    >
+                                                        🔗 Webhook
+                                                    </button>
                                                 </div>
                                             </td>
                                         )}
@@ -264,6 +360,156 @@ const Instances = () => {
                             })}
                         </tbody>
                     </table>
+                </div>
+            )}
+
+            {/* Modal de Criação de Instância */}
+            {showCreateModal && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h3>Criar Nova Instância</h3>
+                            <button 
+                                className="close-btn"
+                                onClick={() => {
+                                    setShowCreateModal(false);
+                                    setInstanceName('');
+                                    setNumber('');
+                                    setError(null);
+                                }}
+                            >
+                                ×
+                            </button>
+                        </div>
+                        <form onSubmit={handleCreateInstance} className="instance-form">
+                            <div className="form-group">
+                                <label htmlFor="instanceName">Nome da Instância:</label>
+                                <input
+                                    type="text"
+                                    id="instanceName"
+                                    value={instanceName}
+                                    onChange={(e) => setInstanceName(e.target.value)}
+                                    placeholder="Digite o nome da instância"
+                                    required
+                                    disabled={creating}
+                                />
+                                <small className="form-help">
+                                    O nome deve ser único e será usado para identificar a instância.
+                                </small>
+                            </div>
+                            
+                            <div className="form-group">
+                                <label htmlFor="number">Número do WhatsApp:</label>
+                                <input
+                                    type="text"
+                                    id="number"
+                                    value={number}
+                                    onChange={(e) => setNumber(e.target.value)}
+                                    placeholder="Ex: 5511999999999"
+                                    required
+                                    disabled={creating}
+                                />
+                                <small className="form-help">
+                                    Digite o número completo com código do país (ex: 5511999999999).
+                                </small>
+                            </div>
+                            
+                            {error && <div className="error-message">{error}</div>}
+                            
+                            <div className="form-actions">
+                                <button 
+                                    type="button" 
+                                    onClick={() => {
+                                        setShowCreateModal(false);
+                                        setInstanceName('');
+                                        setNumber('');
+                                        setError(null);
+                                    }}
+                                    disabled={creating}
+                                >
+                                    Cancelar
+                                </button>
+                                <button 
+                                    type="submit" 
+                                    className="btn-primary"
+                                    disabled={creating || !instanceName.trim() || !number.trim()}
+                                >
+                                    {creating ? '⏳ Criando...' : '✅ Criar Instância'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal de Configuração de Webhook */}
+            {showWebhookModal && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h3>Configurar Webhook</h3>
+                            <button 
+                                className="close-btn"
+                                onClick={() => {
+                                    setShowWebhookModal(false);
+                                    setWebhookUrl('');
+                                    setSelectedInstance(null);
+                                    setError(null);
+                                }}
+                            >
+                                ×
+                            </button>
+                        </div>
+                        <div className="instance-form">
+                            <div className="webhook-instance-info">
+                                <h4>Informações da Instância</h4>
+                                <p><strong>Nome:</strong> <span className="instance-name">{selectedInstance?.instanceName}</span></p>
+                                <p><strong>Número:</strong> <span className="instance-number">{selectedInstance?.owner || 'N/A'}</span></p>
+                                <p><strong>Token:</strong> <span className="token-display">{selectedInstance?.token ? `${selectedInstance.token.substring(0, 12)}...` : 'N/A'}</span></p>
+                            </div>
+                            
+                            <div className="form-group">
+                                <label htmlFor="webhookUrl">URL do Webhook:</label>
+                                <input
+                                    type="url"
+                                    id="webhookUrl"
+                                    value={webhookUrl}
+                                    onChange={(e) => setWebhookUrl(e.target.value)}
+                                    placeholder="https://exemplo.com/webhook"
+                                    required
+                                    disabled={settingWebhook}
+                                />
+                                <small className="form-help">
+                                    Digite a URL completa onde os eventos da instância serão enviados.
+                                </small>
+                            </div>
+                            
+                            {error && <div className="error-message">{error}</div>}
+                            
+                            <div className="form-actions">
+                                <button 
+                                    type="button" 
+                                    onClick={() => {
+                                        setShowWebhookModal(false);
+                                        setWebhookUrl('');
+                                        setSelectedInstance(null);
+                                        setError(null);
+                                    }}
+                                    disabled={settingWebhook}
+                                >
+                                    Cancelar
+                                </button>
+                                <button 
+                                    type="button" 
+                                    className="btn-primary"
+                                    onClick={handleSetWebhook}
+                                    disabled={settingWebhook || !webhookUrl.trim()}
+                                >
+                                    {settingWebhook ? '⏳ Configurando...' : '✅ Salvar Webhook'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

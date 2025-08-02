@@ -67,11 +67,14 @@
     border: 1px solid #ddd;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background: white;
+    overflow-x: auto; /* Adiciona scroll horizontal para responsividade */
 }
 
 .instances-table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 800px; /* Largura mínima para manter layout em mobile */
     margin: 0;
 }
 
@@ -128,6 +131,29 @@
     color: #666;
 }
 
+.token-info {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+}
+
+.token-display {
+    background-color: #e9ecef;
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: #495057;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.token-display:hover {
+    background-color: #dee2e6;
+}
+
+.token-empty {
+    color: #6c757d;
+    font-style: italic;
+}
+
 .project-info {
     display: flex;
     flex-direction: column;
@@ -177,6 +203,7 @@
 .instance-actions {
     display: flex;
     gap: 5px;
+    flex-wrap: wrap;
 }
 
 .action-button {
@@ -207,7 +234,234 @@
     background-color: #0f7a2a;
 }
 
+.webhook-button {
+    background-color: #007bff;
+    color: white;
+}
+
+.webhook-button:hover {
+    background-color: #0056b3;
+}
+
 .error-message {
     color: red;
     margin-top: 10px;
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    padding: 0;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #e9ecef;
+    background-color: #f8f9fa;
+    border-radius: 12px 12px 0 0;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #333;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #6c757d;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-btn:hover {
+    color: #333;
+}
+
+/* Form Styles */
+.instance-form {
+    padding: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.form-group input:disabled {
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+    color: #6c757d;
+}
+
+.form-help {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    color: #6c757d;
+    font-style: italic;
+}
+
+.form-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: flex-end;
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef;
+}
+
+.form-actions button {
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    border: 1px solid #ddd;
+    background-color: white;
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+.form-actions button:hover:not(:disabled) {
+    background-color: #f8f9fa;
+}
+
+.form-actions button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background-color: #007bff !important;
+    color: white !important;
+    border-color: #007bff !important;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background-color: #0056b3 !important;
+    border-color: #0056b3 !important;
+}
+
+/* Webhook Modal Specific Styles */
+.webhook-instance-info {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    border-left: 4px solid #007bff;
+}
+
+.webhook-instance-info h4 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 16px;
+}
+
+.webhook-instance-info p {
+    margin: 5px 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.webhook-instance-info .instance-name {
+    font-weight: 600;
+    color: #007bff;
+}
+
+.webhook-instance-info .instance-number {
+    font-family: 'Courier New', monospace;
+    background-color: #e9ecef;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+}
+
+/* Responsividade para mobile */
+@media (max-width: 768px) {
+    .table-container {
+        padding: 10px;
+    }
+    
+    .instances-table {
+        font-size: 12px;
+    }
+    
+    .instances-table th,
+    .instances-table td {
+        padding: 8px 4px;
+    }
+    
+    .instance-actions {
+        flex-direction: column;
+        gap: 3px;
+    }
+    
+    .action-button {
+        font-size: 11px;
+        padding: 4px 8px;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 10px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .form-actions button {
+        width: 100%;
+    }
 }
