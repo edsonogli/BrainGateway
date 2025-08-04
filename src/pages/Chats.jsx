@@ -24,6 +24,7 @@ const Chats = () => {
     const [chatNumbers, setChatNumbers] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const messagesEndRef = useRef(null);
+    const selectedContactRef = useRef(null);
     const { sendMessage } = useApi();
 
     // Estado derivado que combina chatNumbers com dados dos contatos
@@ -80,9 +81,20 @@ const Chats = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
+    const scrollToSelectedContact = () => {
+        selectedContactRef.current?.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+        });
+    };
+
     useEffect(() => {
         if (selectedNumber) {
             scrollToBottom();
+            // Pequeno delay para garantir que o DOM foi atualizado
+            setTimeout(() => {
+                scrollToSelectedContact();
+            }, 100);
         }
     }, [selectedNumber, groupedChats]);
 
@@ -444,6 +456,7 @@ const Chats = () => {
                             }).map(({ number, name, urlImage, requiresAction }) => (
                             <li
                             key={number}
+                            ref={selectedNumber === number ? selectedContactRef : null}
                             className={`contact ${selectedNumber === number ? 'active' : ''} ${requiresAction ? 'requires-action' : ''}`}
                             onClick={() => handleNumberClick(number)}
                             >
@@ -503,6 +516,7 @@ const Chats = () => {
                         .map(({ number, name, urlImage, requiresAction }) => (
                         <li
                             key={number}
+                            ref={selectedNumber === number ? selectedContactRef : null}
                             className={`contact ${selectedNumber === number ? 'active' : ''} ${requiresAction ? 'requires-action' : ''}`}
                             onClick={() => handleNumberClick(number)}
                         >
@@ -552,7 +566,44 @@ const Chats = () => {
                 {selectedNumber ? (
                     <>
                         <div className="chat-panel-header">
-                            <span>{formatPhoneNumber(selectedNumber)}</span>
+                            <div className="chat-header-contact-info">
+                                {(() => {
+                                    const contact = enrichedChatNumbers.find(c => c.number === selectedNumber);
+                                    return (
+                                        <>
+                                            <div className="chat-header-avatar-container">
+                                                {contact?.urlImage ? (
+                                                    <>
+                                                        <img
+                                                            className="chat-header-avatar"
+                                                            src={processImageUrl(contact.urlImage)}
+                                                            alt={contact.name || selectedNumber}
+                                                            onError={(e) => {
+                                                                e.target.style.display = 'none';
+                                                                const fallback = e.target.parentNode.querySelector('.chat-header-avatar-fallback');
+                                                                if (fallback) fallback.style.display = 'flex';
+                                                            }}
+                                                        />
+                                                        <div className="chat-header-avatar-fallback">{selectedNumber.slice(-2)}</div>
+                                                    </>
+                                                ) : (
+                                                    <div className="chat-header-avatar-fallback" style={{display: 'flex'}}>{selectedNumber.slice(-2)}</div>
+                                                )}
+                                            </div>
+                                            <div className="chat-header-text-info">
+                                                {contact?.name ? (
+                                                    <>
+                                                        <div className="chat-header-name">{contact.name}</div>
+                                                        <div className="chat-header-number">{formatPhoneNumber(selectedNumber)}</div>
+                                                    </>
+                                                ) : (
+                                                    <div className="chat-header-number-only">{formatPhoneNumber(selectedNumber)}</div>
+                                                )}
+                                            </div>
+                                        </>
+                                    );
+                                })()}
+                            </div>
                             <div className="header-actions">
                                 {groupedChats.find((chat) => chat.number === selectedNumber)?.contactId && (
                                     <button
