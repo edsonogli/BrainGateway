@@ -139,6 +139,16 @@ const AdminLayout = () => {
                             Projetos
                         </Link>
                     )}
+                    {userData?.isAdmin && (
+                        <Link 
+                            to="/admin/users" 
+                            onClick={toggleSidebar}
+                            className={isActiveLink('/admin/users') ? 'active' : ''}
+                        >
+                            <span className="nav-icon">👥</span>
+                            Usuários
+                        </Link>
+                    )}
                     <Link 
                         to="/admin/schedules" 
                         onClick={toggleSidebar}

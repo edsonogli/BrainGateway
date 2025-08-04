@@ -389,6 +389,23 @@ export const ApiProvider = ({ children }) => {
         withLoading(() => api.post('/Brain/AllowNumbers', { numbers }).then(response => response.data)),
     [withLoading]);
 
+    // Funções para gerenciamento de usuários
+    const getUsers = useCallback(() => 
+        withLoading(() => api.get('/Auth/Users').then(response => response.data)),
+    [withLoading]);
+
+    const createUser = useCallback((userData) => 
+        withLoading(() => api.post('/Auth/register', userData).then(response => response.data)),
+    [withLoading]);
+
+    const activateUser = useCallback((userId) => 
+        withLoading(() => api.post(`/Auth/activate?idUser=${userId}`).then(response => response.data)),
+    [withLoading]);
+
+    const disableUser = useCallback((userId) => 
+        withLoading(() => api.post(`/Auth/disable?idUser=${userId}`).then(response => response.data)),
+    [withLoading]);
+
     const value = {
         login,
         getContacts,
@@ -440,6 +457,11 @@ export const ApiProvider = ({ children }) => {
         resetThread,
         getAllowedNumbers,
         setAllowedNumbers,
+        // User management
+        getUsers,
+        createUser,
+        activateUser,
+        disableUser,
         isLoading
     };
 

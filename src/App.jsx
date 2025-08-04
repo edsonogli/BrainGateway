@@ -20,6 +20,7 @@ import InstanceConnect from './pages/InstanceConnect';
 import Notifications from './pages/Notifications';
 import Schedules from './pages/Schedules';
 import Campanhas from './pages/Campanhas';
+import Users from './pages/Users';
 
 const ProtectedRoute = ({ children }) => {
     const { isAuthenticated, isLoading } = useAuth();
@@ -53,6 +54,7 @@ const App = () => {
                         <Route path="assistants" element={<Assistants />} />
                         <Route path="instances" element={<Instances />} />
                         <Route path="instances/connect" element={<InstanceConnect />} />
+                        <Route path="users" element={<Users />} />
                         <Route path="settings" element={<Settings />} />
                         <Route path="projects" element={<Projects />} />
                         <Route path="contacts" element={<Contacts />} />
