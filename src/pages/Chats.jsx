@@ -43,13 +43,45 @@ const Chats = () => {
 
         try {
             await sendMessage({
-            number: selectedNumber,
-            message: newMessage
+                number: selectedNumber,
+                message: newMessage
             });
 
             setNewMessage('');
-            await handleNumberClick(selectedNumber); // recarrega a conversa
-            scrollToBottom();
+            
+            // Força o recarregamento da conversa para mostrar a nova mensagem
+            try {
+                const chatsData = await getChats(selectedNumber, userData?.isAdmin ? selectedProject : undefined);
+                
+                if (Array.isArray(chatsData) && chatsData.length > 0) {
+                    const contact = contacts.find(c => c.number === selectedNumber);
+                    const sortedMessages = chatsData.sort(
+                        (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+                    );
+
+                    const chatGroup = {
+                        number: selectedNumber,
+                        messages: sortedMessages,
+                        lastMessage: sortedMessages[sortedMessages.length - 1],
+                        lastMessageTime: new Date(sortedMessages[sortedMessages.length - 1].timestamp),
+                        isActive: contact ? contact.active : true,
+                        contactId: contact ? contact.id : null
+                    };
+
+                    setGroupedChats([chatGroup]);
+                    setFilteredChats([chatGroup]);
+                }
+            } catch (reloadError) {
+                console.error('Erro ao recarregar conversa:', reloadError);
+                // Se falhar o reload, tenta usar handleNumberClick como fallback
+                await handleNumberClick(selectedNumber);
+            }
+            
+            // Scroll para o final após um pequeno delay para garantir que o DOM foi atualizado
+            setTimeout(() => {
+                scrollToBottom();
+            }, 100);
+            
         } catch (error) {
             console.error('Erro ao enviar mensagem:', error);
             setError('Falha ao enviar a mensagem');

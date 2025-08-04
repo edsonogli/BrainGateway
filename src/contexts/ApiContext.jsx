@@ -220,23 +220,19 @@ export const ApiProvider = ({ children }) => {
         return api.get('/Brain/ChatsByNumber', { params }).then(res => res.data);
     }, []);
 
-    const sendMessage = async ({ number, message }) => {
+    const sendMessage = useCallback(async ({ number, message }) => {
         try {
             const response = await api.post('/Wpp/SendMessage', {
                 number,
                 message
             });
 
-            if (!response.ok) {
-            throw new Error('Erro ao enviar a mensagem');
-            }
-
-            return await response.json();
+            return response.data;
         } catch (error) {
             console.error('Erro em sendMessage:', error);
             throw error;
         }
-    };
+    }, []);
 
 
     const getChatsControlLog = useCallback((number) => 
