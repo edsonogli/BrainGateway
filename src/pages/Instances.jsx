@@ -6,7 +6,7 @@ import { debugError } from '../config';
 import './Instances.css';
 
 const Instances = () => {
-    const { getInstances, getProjects, createInstance, setWebhook } = useApi();
+    const { getInstances, getProjects, createInstance, setWebhook, getWebhook } = useApi();
     const { userData } = useAuth();
     const navigate = useNavigate();
     const [instances, setInstances] = useState([]);
@@ -21,6 +21,7 @@ const Instances = () => {
     const [showWebhookModal, setShowWebhookModal] = useState(false);
     const [selectedInstance, setSelectedInstance] = useState(null);
     const [webhookUrl, setWebhookUrl] = useState('');
+    const [currentWebhookUrl, setCurrentWebhookUrl] = useState('');
     const [settingWebhook, setSettingWebhook] = useState(false);
 
     useEffect(() => {
@@ -164,11 +165,34 @@ const Instances = () => {
         }
     };
 
-    const handleWebhookClick = (instance) => {
+    const handleWebhookClick = async (instance) => {
         setSelectedInstance(instance);
         setWebhookUrl('');
+        setCurrentWebhookUrl('');
         setShowWebhookModal(true);
         setError(null);
+
+        // Buscar webhook atual se existir
+        if (instance.token) {
+            try {
+                const webhookData = await getWebhook(instance.instanceName, instance.token);
+                console.log('Resposta do webhook:', webhookData); // Debug
+                
+                // Se a resposta é uma string (texto puro)
+                if (typeof webhookData === 'string' && webhookData.trim()) {
+                    setWebhookUrl(webhookData.trim());
+                    setCurrentWebhookUrl(webhookData.trim());
+                }
+                // Se a resposta é um objeto com webhookUrl
+                else if (webhookData && webhookData.webhookUrl) {
+                    setWebhookUrl(webhookData.webhookUrl);
+                    setCurrentWebhookUrl(webhookData.webhookUrl);
+                }
+            } catch (err) {
+                // Se não encontrar webhook ou der erro, apenas continua sem preencher
+                console.log('Nenhum webhook configurado ou erro ao buscar:', err.message);
+            }
+        }
     };
 
     const handleSetWebhook = async () => {
@@ -470,6 +494,12 @@ const Instances = () => {
                             
                             <div className="form-group">
                                 <label htmlFor="webhookUrl">URL do Webhook:</label>
+                                {currentWebhookUrl && (
+                                    <div className="current-webhook-info">
+                                        <span className="webhook-status">✅ Webhook configurado</span>
+                                        <small>URL atual: {currentWebhookUrl}</small>
+                                    </div>
+                                )}
                                 <input
                                     type="url"
                                     id="webhookUrl"
@@ -480,7 +510,10 @@ const Instances = () => {
                                     disabled={settingWebhook}
                                 />
                                 <small className="form-help">
-                                    Digite a URL completa onde os eventos da instância serão enviados.
+                                    {currentWebhookUrl 
+                                        ? "Modifique a URL para atualizar o webhook ou mantenha a atual."
+                                        : "Digite a URL completa onde os eventos da instância serão enviados."
+                                    }
                                 </small>
                             </div>
                             

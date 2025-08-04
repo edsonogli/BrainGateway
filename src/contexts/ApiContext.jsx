@@ -192,6 +192,15 @@ export const ApiProvider = ({ children }) => {
         }).then(response => response.data)),
     [withLoading]);
 
+    const getWebhook = useCallback((instanceName, token) => 
+        withLoading(() => api.get('/Wpp/Webhook', {
+            params: {
+                instanceName,
+                token
+            }
+        }).then(response => response.data)),
+    [withLoading]);
+
     const getChats = useCallback((number, projectId, since) => {
         const params = { number };
         if (projectId) params.projectId = projectId;
@@ -397,6 +406,7 @@ export const ApiProvider = ({ children }) => {
         getInstances,
         createInstance,
         setWebhook,
+        getWebhook,
         getChats,
         getChatsSilent,
         getChatsNumbers,

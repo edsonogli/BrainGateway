@@ -1,7 +1,49 @@
 .notifications-container {
-    padding: 20px;
-    max-width: 1200px;
+    padding: 20px 40px;
+    max-width: 1400px;
     margin: 0 auto;
+    width: 100%;
+}
+
+.notifications-container h2 {
+    margin-bottom: 30px;
+    color: #333;
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+/* Tabs Styles */
+.tabs {
+    display: flex;
+    border-bottom: 2px solid #e0e0e0;
+    margin-bottom: 30px;
+}
+
+.tab {
+    background: none;
+    border: none;
+    padding: 15px 25px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #666;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.tab:hover {
+    color: #1976d2;
+    background-color: #f5f5f5;
+}
+
+.tab.active {
+    color: #1976d2;
+    border-bottom-color: #1976d2;
+    background-color: #f8f9fa;
+}
+
+.tab-content {
+    min-height: 400px;
 }
 
 .notification-form {
@@ -54,6 +96,41 @@
     background-color: #1565c0;
 }
 
+/* List Styles */
+.list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.list-header h3 {
+    margin: 0;
+    color: #333;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    border: 2px dashed #e0e0e0;
+}
+
+.empty-state p {
+    color: #666;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+}
+
+.notifications-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 25px;
+}
+
 .notifications-list {
     display: flex;
     flex-direction: column;
@@ -62,14 +139,84 @@
 
 .notification-card {
     background-color: #ffffff;
-    border-radius: 10px;
+    border-radius: 12px;
     padding: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid #e0e0e0;
 }
 
 .notification-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-4px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.card-header h4 {
+    margin: 0;
+    color: #333;
+    font-size: 1.2rem;
+    font-weight: 600;
+    flex: 1;
+}
+
+.card-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 8px 0;
+}
+
+.info-row .label {
+    font-weight: 600;
+    color: #555;
+    min-width: 100px;
+    flex-shrink: 0;
+}
+
+.info-row .value {
+    color: #333;
+    text-align: right;
+    flex: 1;
+    word-break: break-word;
+}
+
+.info-row .value.message {
+    background-color: #f8f9fa;
+    padding: 8px;
+    border-radius: 6px;
+    font-style: italic;
+    text-align: left;
+    margin-left: 10px;
+}
+
+.info-row .value.code {
+    background-color: #f1f3f4;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    text-align: left;
+    margin-left: 10px;
 }
 
 .notification-content {
@@ -138,6 +285,67 @@
     gap: 10px;
 }
 
+/* Button Styles */
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background-color: #1976d2;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #1565c0;
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background-color: #f5f5f5;
+    color: #666;
+    border: 1px solid #ddd;
+}
+
+.btn-secondary:hover {
+    background-color: #e0e0e0;
+    color: #333;
+}
+
+.btn-edit {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+}
+
+.btn-edit:hover {
+    background-color: #bbdefb;
+    transform: translateY(-1px);
+}
+
+.btn-delete {
+    background-color: #ffebee;
+    color: #c62828;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+}
+
+.btn-delete:hover {
+    background-color: #ffcdd2;
+    transform: translateY(-1px);
+}
+
 .action-button {
     padding: 6px 12px;
     border: none;
@@ -168,7 +376,77 @@
 .error-message {
     color: #c62828;
     background-color: #ffebee;
-    padding: 10px;
-    border-radius: 4px;
+    padding: 15px;
+    border-radius: 8px;
     margin-bottom: 20px;
+    border: 1px solid #ffcdd2;
+    font-weight: 500;
+}
+
+.loading {
+    text-align: center;
+    padding: 40px;
+    font-size: 1.1rem;
+    color: #666;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .notifications-container {
+        padding: 15px 20px;
+        max-width: 100%;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    .tabs {
+        flex-direction: column;
+    }
+
+    .tab {
+        text-align: center;
+        border-radius: 8px;
+        margin-bottom: 5px;
+    }
+
+    .notifications-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .notification-card {
+        padding: 15px;
+    }
+
+    .card-header h3 {
+        font-size: 1rem;
+    }
+
+    .card-content .info-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+
+    .card-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .notifications-container {
+        padding: 10px 15px;
+    }
+    
+    .notifications-grid {
+        gap: 10px;
+    }
 }

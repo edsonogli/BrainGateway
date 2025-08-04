@@ -11,6 +11,7 @@ const Contacts = () => {
     const [contacts, setContacts] = useState([]);
     const [filteredContacts, setFilteredContacts] = useState([]); // Para armazenar os contatos filtrados
     const [searchTerm, setSearchTerm] = useState(''); // Estado para o termo de busca
+    const [statusFilter, setStatusFilter] = useState('all'); // Estado para filtro de status (all, active, inactive)
     const [selectedContacts, setSelectedContacts] = useState([]); // Para armazenar os contatos selecionados
     const [selectAll, setSelectAll] = useState(false); // Para controlar o "selecionar todos"
     const [error, setError] = useState(null);
@@ -31,19 +32,30 @@ const Contacts = () => {
     }, [getContacts]);
 
     useEffect(() => {
-        // Filtro baseado no termo de busca
+        // Filtro baseado no termo de busca e status
         const lowerCaseSearchTerm = searchTerm.toLowerCase();
-        const filtered = contacts.filter(
-            (contact) =>
-                contact.name.toLowerCase().includes(lowerCaseSearchTerm) ||
-                contact.number.toLowerCase().includes(lowerCaseSearchTerm)
-        );
+        const filtered = contacts.filter((contact) => {
+            // Filtro por texto (nome ou número)
+            const matchesSearch = contact.name.toLowerCase().includes(lowerCaseSearchTerm) ||
+                                contact.number.toLowerCase().includes(lowerCaseSearchTerm);
+            
+            // Filtro por status
+            let matchesStatus = true;
+            if (statusFilter === 'active') {
+                matchesStatus = contact.active === true;
+            } else if (statusFilter === 'inactive') {
+                matchesStatus = contact.active === false;
+            }
+            
+            return matchesSearch && matchesStatus;
+        });
+        
         setFilteredContacts(filtered);
         
         // Limpa seleções quando o filtro muda
         setSelectedContacts([]);
         setSelectAll(false);
-    }, [searchTerm, contacts]);
+    }, [searchTerm, statusFilter, contacts]);
 
     const handleInactivate = async (contactId) => {
         try {
@@ -209,15 +221,30 @@ const Contacts = () => {
             <h2>Contatos</h2>
             {error && <p className="error-message">{error}</p>}
 
-            {/* Campo de busca */}
-            <div className="search-container">
-                <input
-                    type="text"
-                    placeholder="Filtrar por nome ou número"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="search-input"
-                />
+            {/* Campo de busca e filtros */}
+            <div className="filters-container">
+                <div className="search-container">
+                    <input
+                        type="text"
+                        placeholder="Filtrar por nome ou número"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="search-input"
+                    />
+                </div>
+                <div className="status-filter-container">
+                    <label htmlFor="statusFilter">Status:</label>
+                    <select
+                        id="statusFilter"
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        className="status-filter-select"
+                    >
+                        <option value="all">Todos</option>
+                        <option value="active">Apenas Ativos</option>
+                        <option value="inactive">Apenas Inativos</option>
+                    </select>
+                </div>
             </div>
 
             {/* Botões de ação em lote - sempre visíveis */}
@@ -287,12 +314,7 @@ const Contacts = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {sortedContacts
-                          .filter(contact => 
-                            contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            contact.number.includes(searchTerm)
-                          )
-                          .map((contact, index) => (
+                        {filteredContacts.map((contact, index) => (
                             <tr key={index} className={selectedContacts.includes(contact.id) ? 'selected-row' : ''}>
                                 <td>
                                     <input

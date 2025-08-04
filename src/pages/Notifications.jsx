@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useApi } from '../contexts/ApiContext';
+import NotificationForm from '../components/NotificationForm';
 import './Notifications.css';
 
 const Notifications = () => {
     const [notifications, setNotifications] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [activeTab, setActiveTab] = useState('list'); // 'list' ou 'create'
     const [formData, setFormData] = useState({
         type: 0,
         projectId: 0,
@@ -20,50 +22,44 @@ const Notifications = () => {
     const [editingId, setEditingId] = useState(null);
     const { getNotifications, createNotification, deleteNotification, updateNotification } = useApi();
 
-    useEffect(() => {
-        const fetchNotifications = async () => {
-            try {
-                const token = localStorage.getItem('authToken');
-                console.log('Token de autenticação:', token ? 'Presente' : 'Ausente');
-                
-                const data = await getNotifications();
-                console.log('Dados recebidos da API:', data);
-                setNotifications(Array.isArray(data) ? data : []);
-                setLoading(false);
-            } catch (err) {
-                console.error('Erro ao carregar notificações:', err);
-                setError(`Erro ao carregar notificações: ${err.message || 'Erro desconhecido'}`);
-                setLoading(false);
-            }
-        };
+    const fetchNotifications = async () => {
+        try {
+            setLoading(true);
+            const data = await getNotifications();
+            setNotifications(Array.isArray(data) ? data : []);
+            setLoading(false);
+        } catch (err) {
+            console.error('Erro ao carregar notificações:', err);
+            setError(`Erro ao carregar notificações: ${err.message || 'Erro desconhecido'}`);
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchNotifications();
     }, [getNotifications]);
 
     const handleDelete = async (id) => {
         try {
             await deleteNotification(id);
-            setNotifications(notifications.filter(notification => notification.id !== id));
+            await fetchNotifications();
         } catch (err) {
             console.error('Erro ao deletar notificação:', err);
             setError('Erro ao deletar notificação');
         }
     };
 
-    const handleUpdate = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             if (editingId) {
                 await updateNotification(editingId, formData);
-                const updatedNotifications = notifications.map(notification =>
-                    notification.id === editingId ? { ...notification, ...formData } : notification
-                );
-                setNotifications(updatedNotifications);
                 setEditingId(null);
             } else {
-                const newNotification = await createNotification(formData);
-                setNotifications([...notifications, newNotification]);
+                await createNotification(formData);
             }
+            
+            // Reset form
             setFormData({
                 type: 0,
                 projectId: 0,
@@ -75,6 +71,13 @@ const Notifications = () => {
                 afterDays: 0,
                 name: ''
             });
+            
+            // Refresh notifications list
+            await fetchNotifications();
+            
+            // Navigate to list tab
+            setActiveTab('list');
+            
         } catch (err) {
             console.error('Erro ao salvar notificação:', err);
             setError('Erro ao salvar notificação');
@@ -94,6 +97,7 @@ const Notifications = () => {
             name: notification.name || ''
         });
         setEditingId(notification.id);
+        setActiveTab('create');
     };
 
     const handleInputChange = (e) => {
@@ -104,167 +108,138 @@ const Notifications = () => {
         }));
     };
 
-    if (loading) return <div>Carregando...</div>;
+    const handleCancel = () => {
+        setEditingId(null);
+        setFormData({
+            type: 0,
+            projectId: 0,
+            message: '',
+            mediaFile: '',
+            audioFile: '',
+            regex: '',
+            active: true,
+            afterDays: 0,
+            name: ''
+        });
+        setActiveTab('list');
+    };
+
+    if (loading) return <div className="loading">Carregando...</div>;
     if (error) return <div className="error-message">{error}</div>;
 
     return (
         <div className="notifications-container">
             <h2>Notificações</h2>
             
-            <form onSubmit={handleUpdate} className="notification-form">
-                <div className="form-group">
-                    <label htmlFor="name">Nome</label>
-                    <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        required
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="type">Tipo</label>
-                    <input
-                        type="number"
-                        id="type"
-                        name="type"
-                        value={formData.type}
-                        onChange={handleInputChange}
-                        required
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="projectId">ID do Projeto</label>
-                    <input
-                        type="number"
-                        id="projectId"
-                        name="projectId"
-                        value={formData.projectId}
-                        onChange={handleInputChange}
-                        required
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="afterDays">Dias Após</label>
-                    <input
-                        type="number"
-                        id="afterDays"
-                        name="afterDays"
-                        value={formData.afterDays}
-                        onChange={handleInputChange}
-                        required
-                    />
-                </div>
-                
-                <div className="form-group">
-                    <label htmlFor="message">Mensagem</label>
-                    <textarea
-                        id="message"
-                        name="message"
-                        value={formData.message}
-                        onChange={handleInputChange}
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="mediaFile">Arquivo de Mídia</label>
-                    <input
-                        type="text"
-                        id="mediaFile"
-                        name="mediaFile"
-                        value={formData.mediaFile}
-                        onChange={handleInputChange}
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="audioFile">Arquivo de Áudio</label>
-                    <input
-                        type="text"
-                        id="audioFile"
-                        name="audioFile"
-                        value={formData.audioFile}
-                        onChange={handleInputChange}
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="regex">Regex</label>
-                    <input
-                        type="text"
-                        id="regex"
-                        name="regex"
-                        value={formData.regex}
-                        onChange={handleInputChange}
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="active">
-                        <input
-                            type="checkbox"
-                            id="active"
-                            name="active"
-                            checked={formData.active}
-                            onChange={(e) => setFormData(prev => ({ ...prev, active: e.target.checked }))}
-                        />
-                        Ativo
-                    </label>
-                </div>
-                
-                <button type="submit" className="submit-button">
-                    {editingId ? 'Atualizar' : 'Criar'} Notificação
+            <div className="tabs">
+                <button 
+                    className={`tab ${activeTab === 'list' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('list')}
+                >
+                    Lista de Notificações
                 </button>
-            </form>
+                <button 
+                    className={`tab ${activeTab === 'create' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('create')}
+                >
+                    {editingId ? 'Editar Notificação' : 'Criar Notificação'}
+                </button>
+            </div>
 
-            <div className="notifications-list">
-                {notifications.map(notification => {
-                    if (!notification || typeof notification !== 'object') return null;
-                    
-                    return (
-                        <div key={notification.id || 'temp-key'} className="notification-card">
-                            <div className="notification-header">
-                                <h3>Notificação #{notification.id}</h3>
-                                <span className={`status ${notification.active ? 'active' : 'inactive'}`}>
-                                    {notification.active ? 'Ativo' : 'Inativo'}
-                                </span>
-                            </div>
-                            <div className="notification-content">
-                                <p><strong>Tipo:</strong> {notification.type}</p>
-                                <p><strong>Projeto ID:</strong> {notification.projectId}</p>
-                                <p><strong>Mensagem:</strong> {notification.message || 'Sem mensagem'}</p>
-                                {notification.mediaFile && <p><strong>Arquivo de Mídia:</strong> {notification.mediaFile}</p>}
-                                {notification.audioFile && <p><strong>Arquivo de Áudio:</strong> {notification.audioFile}</p>}
-                                {notification.regex && <p><strong>Regex:</strong> {notification.regex}</p>}
-                                <p><strong>Nome:</strong> {notification.name || 'Sem nome'}</p>
-                                <p><strong>Dias Após:</strong> {notification.afterDays || 0}</p>
-                            </div>
-                            <div className="notification-footer">
-                                <span className="timestamp">
-                                    {notification.createdAt ? new Date(notification.createdAt).toLocaleString() : 'Data não disponível'}
-                                </span>
-                                <div className="notification-actions">
-                                    <button 
-                                        onClick={() => handleEdit(notification)}
-                                        className="action-button edit"
-                                    >
-                                        Editar
-                                    </button>
-                                    <button 
-                                        onClick={() => notification.id && handleDelete(notification.id)}
-                                        className="action-button delete"
-                                    >
-                                        Deletar
-                                    </button>
-                                </div>
-                            </div>
+            <div className="tab-content">
+                {activeTab === 'create' ? (
+                    <NotificationForm
+                        formData={formData}
+                        onInputChange={handleInputChange}
+                        onSubmit={handleSubmit}
+                        editingId={editingId}
+                        onCancel={handleCancel}
+                    />
+                ) : (
+                    <div className="notifications-list">
+                        <div className="list-header">
+                            <h3>Lista de Notificações</h3>
+                            <button 
+                                className="btn btn-primary"
+                                onClick={() => setActiveTab('create')}
+                            >
+                                Nova Notificação
+                            </button>
                         </div>
-                    );
-                })}
+                        
+                        {notifications.length === 0 ? (
+                            <div className="empty-state">
+                                <p>Nenhuma notificação encontrada.</p>
+                                <button 
+                                    className="btn btn-primary"
+                                    onClick={() => setActiveTab('create')}
+                                >
+                                    Criar primeira notificação
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="notifications-grid">
+                                {notifications.map(notification => (
+                                    <div key={notification.id} className="notification-card">
+                                        <div className="card-header">
+                                            <h4>{notification.name || `Notificação ${notification.id}`}</h4>
+                                            <div className="card-actions">
+                                                <button 
+                                                    className="btn btn-edit"
+                                                    onClick={() => handleEdit(notification)}
+                                                >
+                                                    Editar
+                                                </button>
+                                                <button 
+                                                    className="btn btn-delete"
+                                                    onClick={() => handleDelete(notification.id)}
+                                                >
+                                                    Excluir
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div className="card-content">
+                                            <div className="info-row">
+                                                <span className="label">ID:</span>
+                                                <span className="value">{notification.id}</span>
+                                            </div>
+                                            <div className="info-row">
+                                                <span className="label">Tipo:</span>
+                                                <span className="value">{notification.type}</span>
+                                            </div>
+                                            <div className="info-row">
+                                                <span className="label">Projeto:</span>
+                                                <span className="value">{notification.projectId}</span>
+                                            </div>
+                                            <div className="info-row">
+                                                <span className="label">Dias Após:</span>
+                                                <span className="value">{notification.afterDays}</span>
+                                            </div>
+                                            <div className="info-row">
+                                                <span className="label">Status:</span>
+                                                <span className={`status ${notification.active ? 'active' : 'inactive'}`}>
+                                                    {notification.active ? 'Ativo' : 'Inativo'}
+                                                </span>
+                                            </div>
+                                            {notification.message && (
+                                                <div className="info-row">
+                                                    <span className="label">Mensagem:</span>
+                                                    <span className="value message">{notification.message}</span>
+                                                </div>
+                                            )}
+                                            {notification.regex && (
+                                                <div className="info-row">
+                                                    <span className="label">Regex:</span>
+                                                    <span className="value code">{notification.regex}</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
         </div>
     );

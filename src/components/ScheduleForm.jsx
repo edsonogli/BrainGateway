@@ -2,15 +2,28 @@ import React from 'react';
 import { useApi } from '../contexts/ApiContext';
 
 const ScheduleForm = ({ onScheduleCreated, editingSchedule, onScheduleUpdated, onCancelEdit }) => {
-    const { createSchedule, updateSchedule } = useApi();
+    const { createSchedule, updateSchedule, getNotifications } = useApi();
+    const [notifications, setNotifications] = React.useState([]);
     const [formData, setFormData] = React.useState({
         notificationId: '',
         number: '',
         executeAt: '',
-        executed: false,
-        error: '',
         params: ''
     });
+
+    // Buscar notificações disponíveis
+    React.useEffect(() => {
+        const fetchNotifications = async () => {
+            try {
+                const data = await getNotifications();
+                setNotifications(Array.isArray(data) ? data : []);
+            } catch (error) {
+                console.error('Erro ao carregar notificações:', error);
+                setNotifications([]);
+            }
+        };
+        fetchNotifications();
+    }, [getNotifications]);
 
     React.useEffect(() => {
         if (editingSchedule) {
@@ -18,8 +31,6 @@ const ScheduleForm = ({ onScheduleCreated, editingSchedule, onScheduleUpdated, o
                 notificationId: editingSchedule.notificationId || '',
                 number: editingSchedule.number || '',
                 executeAt: editingSchedule.executeAt ? new Date(editingSchedule.executeAt).toISOString().slice(0, 16) : '',
-                executed: editingSchedule.executed || false,
-                error: editingSchedule.error || '',
                 params: editingSchedule.params ? JSON.stringify(editingSchedule.params) : ''
             });
         } else {
@@ -27,8 +38,6 @@ const ScheduleForm = ({ onScheduleCreated, editingSchedule, onScheduleUpdated, o
                 notificationId: '',
                 number: '',
                 executeAt: '',
-                executed: false,
-                error: '',
                 params: ''
             });
         }
@@ -39,6 +48,8 @@ const ScheduleForm = ({ onScheduleCreated, editingSchedule, onScheduleUpdated, o
         try {
             const scheduleData = {
                 ...formData,
+                executed: false, // Valor padrão
+                error: '', // Valor padrão
                 params: formData.params ? JSON.parse(formData.params) : null
             };
 
@@ -54,8 +65,6 @@ const ScheduleForm = ({ onScheduleCreated, editingSchedule, onScheduleUpdated, o
                 notificationId: '',
                 number: '',
                 executeAt: '',
-                executed: false,
-                error: '',
                 params: ''
             });
         } catch (error) {
@@ -74,15 +83,21 @@ const ScheduleForm = ({ onScheduleCreated, editingSchedule, onScheduleUpdated, o
         <div className="form-section">
             <form onSubmit={handleSubmit} className="schedule-form">
             <div className="form-group">
-                <label htmlFor="notificationId">ID da Notificação:</label>
-                <input
-                    type="number"
+                <label htmlFor="notificationId">Notificação:</label>
+                <select
                     id="notificationId"
                     name="notificationId"
                     value={formData.notificationId}
                     onChange={handleChange}
                     required
-                />
+                >
+                    <option value="">Selecione uma notificação</option>
+                    {notifications.map(notification => (
+                        <option key={notification.id} value={notification.id}>
+                            {notification.id} - {notification.name || 'Sem nome'}
+                        </option>
+                    ))}
+                </select>
             </div>
 
             <div className="form-group">
@@ -110,35 +125,13 @@ const ScheduleForm = ({ onScheduleCreated, editingSchedule, onScheduleUpdated, o
             </div>
 
             <div className="form-group">
-                <label htmlFor="executed">Executado:</label>
-                <input
-                    type="checkbox"
-                    id="executed"
-                    name="executed"
-                    checked={formData.executed}
-                    onChange={handleChange}
-                />
-            </div>
-
-            <div className="form-group">
-                <label htmlFor="error">Erro:</label>
-                <input
-                    type="text"
-                    id="error"
-                    name="error"
-                    value={formData.error}
-                    onChange={handleChange}
-                />
-            </div>
-
-            <div className="form-group">
-                <label htmlFor="params">Parâmetros (JSON):</label>
+                <label htmlFor="params">Texto para enviar ou Parâmetros (JSON):</label>
                 <textarea
                     id="params"
                     name="params"
                     value={formData.params}
                     onChange={handleChange}
-                    placeholder="{}"
+                    placeholder='Exemplo: "Olá, como você está?" ou {"nome": "João", "idade": 30}'
                 />
             </div>
             

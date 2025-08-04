@@ -74,18 +74,85 @@
     margin-top: 10px;
 }
 
-.search-container {
+/* Container para filtros */
+.filters-container {
+    display: flex;
+    gap: 20px;
+    align-items: center;
     margin-bottom: 20px;
-    text-align: right; /* Alinha o campo de busca à direita */
+    flex-wrap: wrap;
+}
+
+.search-container {
+    flex: 1;
+    min-width: 250px;
 }
 
 .search-input {
-    padding: 8px 12px;
+    padding: 10px 15px;
     font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
     width: 100%;
-    max-width: 300px;
+    max-width: 400px;
+    transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* Filtro de status */
+.status-filter-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 200px;
+}
+
+.status-filter-container label {
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+}
+
+.status-filter-select {
+    padding: 10px 15px;
+    font-size: 14px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: white;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+    min-width: 150px;
+}
+
+.status-filter-select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* Responsividade para filtros */
+@media (max-width: 768px) {
+    .filters-container {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+    
+    .search-container,
+    .status-filter-container {
+        min-width: auto;
+        width: 100%;
+    }
+    
+    .search-input,
+    .status-filter-select {
+        max-width: none;
+    }
 }
 
 /* Estilos para seleção múltipla */
