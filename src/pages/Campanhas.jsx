@@ -733,6 +733,13 @@ const Campanhas = () => {
                                     <span className={`status ${pesquisa.status?.toLowerCase()}`}>
                                         {pesquisa.status}
                                     </span>
+                                    <button 
+                                        className="btn-delete-icon"
+                                        onClick={() => handleDelete(pesquisa.id)}
+                                        title="Excluir pesquisa"
+                                    >
+                                        🗑️
+                                    </button>
                                 </div>
                             </div>
                             <div className="pesquisa-content">
@@ -753,9 +760,6 @@ const Campanhas = () => {
                                         <small>💬 Mensagem de texto simples - sem opções de resposta</small>
                                     </div>
                                 )}
-                                <p className="data-criacao">
-                                    Criado em: {new Date(pesquisa.createdAt).toLocaleDateString('pt-BR')}
-                                </p>
                             </div>
                             <div className="pesquisa-actions">
                                 <button 
@@ -763,7 +767,7 @@ const Campanhas = () => {
                                     onClick={() => handleDispatch(pesquisa)}
                                     disabled={pesquisa.status === 'closed'}
                                 >
-                                    📤 Disparar Pesquisa
+                                    📤 Disparar
                                 </button>
                                 <button 
                                     className="btn-history"
@@ -775,14 +779,13 @@ const Campanhas = () => {
                                     className="btn-statistics"
                                     onClick={() => handleViewStatistics(pesquisa)}
                                 >
-                                    📈 Estatísticas
+                                    📈 Stats
                                 </button>
-                                <button 
-                                    className="btn-delete"
-                                    onClick={() => handleDelete(pesquisa.id)}
-                                >
-                                    🗑️ Excluir
-                                </button>
+                            </div>
+                            <div className="pesquisa-footer">
+                                <p className="data-criacao">
+                                    Criado em: {new Date(pesquisa.createdAt).toLocaleDateString('pt-BR')}
+                                </p>
                             </div>
                         </div>
                     ))

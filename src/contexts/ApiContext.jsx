@@ -455,6 +455,35 @@ export const ApiProvider = ({ children }) => {
         }
     }, [withLoading]);
 
+    // Funções para gerenciamento de arquivos
+    const getFiles = useCallback((page = 1, pageSize = 10) => 
+        withLoading(() => api.get(`/file?page=${page}&pageSize=${pageSize}`).then(response => response.data)),
+    [withLoading]);
+
+    const getFileById = useCallback((fileId) => 
+        withLoading(() => api.get(`/file/${fileId}`).then(response => response.data)),
+    [withLoading]);
+
+    const uploadFile = useCallback((formData) => 
+        withLoading(() => api.post('/file/upload', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        }).then(response => response.data)),
+    [withLoading]);
+
+    const updateFile = useCallback((fileId, fileData) => 
+        withLoading(() => api.put(`/file/${fileId}`, fileData).then(response => response.data)),
+    [withLoading]);
+
+    const deleteFile = useCallback((fileId) => 
+        withLoading(() => api.delete(`/file/${fileId}`).then(response => response.data)),
+    [withLoading]);
+
+    const downloadFile = useCallback((fileId) => 
+        withLoading(() => api.get(`/file/${fileId}/download`).then(response => response.data)),
+    [withLoading]);
+
     const value = {
         login,
         getContacts,
@@ -514,6 +543,13 @@ export const ApiProvider = ({ children }) => {
         // Terms management
         checkTermsAcceptance,
         acceptTerms,
+        // File management
+        getFiles,
+        getFileById,
+        uploadFile,
+        updateFile,
+        deleteFile,
+        downloadFile,
         isLoading
     };
 

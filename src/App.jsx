@@ -21,6 +21,7 @@ import Notifications from './pages/Notifications';
 import Schedules from './pages/Schedules';
 import Campanhas from './pages/Campanhas';
 import Users from './pages/Users';
+import FileUpload from './pages/FileUpload';
 
 const ProtectedRoute = ({ children }) => {
     const { isAuthenticated, isLoading } = useAuth();
@@ -59,6 +60,7 @@ const App = () => {
                         <Route path="projects" element={<Projects />} />
                         <Route path="contacts" element={<Contacts />} />
                         <Route path="campanhas" element={<Campanhas />} />
+                        <Route path="files" element={<FileUpload />} />
                         <Route path="chats" element={<Chats />} />
                         <Route path="notifications" element={<Notifications />} />
             <Route path="schedules" element={<Schedules />} />

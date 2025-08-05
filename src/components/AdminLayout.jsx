@@ -129,6 +129,14 @@ const AdminLayout = () => {
                     </Link>
 
                     {/* Seção de Gestão */}
+                    <Link 
+                        to="/admin/files" 
+                        onClick={toggleSidebar}
+                        className={isActiveLink('/admin/files') ? 'active' : ''}
+                    >
+                        <span className="nav-icon">📁</span>
+                        Arquivos
+                    </Link>
                     {shouldShowMenu('/admin/projects') && (
                         <Link 
                             to="/admin/projects" 
