@@ -80,6 +80,34 @@
     margin: 0;
     color: #333;
     font-size: 1.2rem;
+    flex: 1;
+}
+
+.header-badges {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.survey-type {
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    border: 1px solid;
+}
+
+.survey-type.question {
+    background-color: #e3f2fd;
+    color: #1565c0;
+    border-color: #bbdefb;
+}
+
+.survey-type.text {
+    background-color: #f3e5f5;
+    color: #7b1fa2;
+    border-color: #ce93d8;
 }
 
 .status {
@@ -385,6 +413,27 @@
     border-radius: 12px;
     font-size: 12px;
     border: 1px solid #dee2e6;
+}
+
+.text-survey-info {
+    margin: 10px 0;
+    padding: 8px 12px;
+    background-color: #f8f9fa;
+    border-left: 3px solid #7b1fa2;
+    border-radius: 4px;
+}
+
+.text-survey-info small {
+    color: #6c757d;
+    font-style: italic;
+}
+
+.form-help {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    color: #6c757d;
+    font-style: italic;
 }
 
 /* Ajustes no formulário */

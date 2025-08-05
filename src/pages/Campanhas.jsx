@@ -63,7 +63,9 @@ const Campanhas = () => {
     
     const [formData, setFormData] = useState({
         name: '',
+        surveyType: 'question', // 'question' ou 'text'
         question: '',
+        textContent: '', // Para pesquisas de texto simples
         options: [''],
         projectId: 0
     });
@@ -192,13 +194,37 @@ const Campanhas = () => {
             return;
         }
         
+        // Validar campos baseado no tipo de pesquisa
+        if (formData.surveyType === 'question') {
+            if (!formData.question.trim()) {
+                alert('Por favor, insira uma pergunta.');
+                return;
+            }
+            if (formData.options.filter(option => option.trim() !== '').length === 0) {
+                alert('Por favor, adicione pelo menos uma opção de resposta.');
+                return;
+            }
+        } else if (formData.surveyType === 'text') {
+            if (!formData.textContent.trim()) {
+                alert('Por favor, insira o conteúdo da mensagem.');
+                return;
+            }
+        }
+        
         try {
             const surveyData = {
                 name: formData.name,
-                question: formData.question,
-                options: formData.options.filter(option => option.trim() !== ''),
+                type: formData.surveyType,
                 projectId: userData?.isAdmin ? formData.projectId : 0
             };
+            
+            // Adicionar campos específicos baseado no tipo
+            if (formData.surveyType === 'question') {
+                surveyData.question = formData.question;
+                surveyData.options = formData.options.filter(option => option.trim() !== '');
+            } else if (formData.surveyType === 'text') {
+                surveyData.content = formData.textContent;
+            }
             
             await createSurvey(surveyData);
             await loadPesquisas(); // Recarregar lista
@@ -206,7 +232,9 @@ const Campanhas = () => {
             // Resetar formulário
             setFormData({
                 name: '',
+                surveyType: 'question',
                 question: '',
+                textContent: '',
                 options: [''],
                 projectId: 0
             });
@@ -678,7 +706,7 @@ const Campanhas = () => {
     return (
         <div className="campanhas-container">
             <div className="campanhas-header">
-                <h2>Campanhas de Pesquisa</h2>
+                <h2>Campanhas</h2>
                 <button 
                     className="btn-new-survey"
                     onClick={() => setShowForm(true)}
@@ -698,17 +726,33 @@ const Campanhas = () => {
                         <div key={pesquisa.id} className="pesquisa-card">
                             <div className="pesquisa-header">
                                 <h3>{pesquisa.name}</h3>
-                                <span className={`status ${pesquisa.status?.toLowerCase()}`}>
-                                    {pesquisa.status}
-                                </span>
+                                <div className="header-badges">
+                                    <span className={`survey-type ${pesquisa.type || 'question'}`}>
+                                        {pesquisa.type === 'text' ? '📝 Texto' : '❓ Pergunta'}
+                                    </span>
+                                    <span className={`status ${pesquisa.status?.toLowerCase()}`}>
+                                        {pesquisa.status}
+                                    </span>
+                                </div>
                             </div>
                             <div className="pesquisa-content">
-                                <p className="pergunta">{pesquisa.question}</p>
-                                <div className="opcoes">
-                                    {pesquisa.options?.map((opcao, index) => (
-                                        <span key={index} className="opcao-tag">{opcao}</span>
-                                    ))}
-                                </div>
+                                {pesquisa.type === 'text' ? (
+                                    <p className="pergunta">{pesquisa.content}</p>
+                                ) : (
+                                    <p className="pergunta">{pesquisa.question}</p>
+                                )}
+                                {(pesquisa.type === 'question' || !pesquisa.type) && pesquisa.options?.length > 0 && (
+                                    <div className="opcoes">
+                                        {pesquisa.options.map((opcao, index) => (
+                                            <span key={index} className="opcao-tag">{opcao}</span>
+                                        ))}
+                                    </div>
+                                )}
+                                {pesquisa.type === 'text' && (
+                                    <div className="text-survey-info">
+                                        <small>💬 Mensagem de texto simples - sem opções de resposta</small>
+                                    </div>
+                                )}
                                 <p className="data-criacao">
                                     Criado em: {new Date(pesquisa.createdAt).toLocaleDateString('pt-BR')}
                                 </p>
@@ -795,48 +839,91 @@ const Campanhas = () => {
                                 </div>
                             )}
                             
+                            {/* Campo de seleção do tipo de pesquisa */}
                             <div className="form-group">
-                                <label htmlFor="question">Pergunta:</label>
-                                <textarea
-                                    id="question"
-                                    name="question"
-                                    value={formData.question}
+                                <label htmlFor="surveyType">Tipo de Pesquisa:</label>
+                                <select
+                                    id="surveyType"
+                                    name="surveyType"
+                                    value={formData.surveyType}
                                     onChange={handleInputChange}
-                                    rows="3"
                                     required
-                                />
+                                >
+                                    <option value="question">Pesquisa com Perguntas</option>
+                                    <option value="text">Mensagem de Texto Simples</option>
+                                </select>
+                                <small className="form-help">
+                                    {formData.surveyType === 'question' 
+                                        ? 'Crie uma pesquisa com pergunta e opções de resposta'
+                                        : 'Envie apenas uma mensagem de texto, sem opções de resposta'
+                                    }
+                                </small>
                             </div>
                             
-                            <div className="form-group">
-                                <label>Possíveis Respostas:</label>
-                                {formData.options.map((option, index) => (
-                                    <div key={index} className="option-input">
-                                        <input
-                                            type="text"
-                                            value={option}
-                                            onChange={(e) => handleOptionChange(index, e.target.value)}
-                                            placeholder={`Opção ${index + 1}`}
+                            {/* Campos condicionais baseados no tipo de pesquisa */}
+                            {formData.surveyType === 'question' ? (
+                                <>
+                                    <div className="form-group">
+                                        <label htmlFor="question">Pergunta:</label>
+                                        <textarea
+                                            id="question"
+                                            name="question"
+                                            value={formData.question}
+                                            onChange={handleInputChange}
+                                            rows="3"
                                             required
+                                            placeholder="Digite a pergunta da pesquisa..."
                                         />
-                                        {formData.options.length > 1 && (
-                                            <button
-                                                type="button"
-                                                className="remove-btn"
-                                                onClick={() => removeOption(index)}
-                                            >
-                                                ×
-                                            </button>
-                                        )}
                                     </div>
-                                ))}
-                                <button
-                                    type="button"
-                                    className="add-option-btn"
-                                    onClick={addOption}
-                                >
-                                    + Adicionar Opção
-                                </button>
-                            </div>
+                                    
+                                    <div className="form-group">
+                                        <label>Possíveis Respostas:</label>
+                                        {formData.options.map((option, index) => (
+                                            <div key={index} className="option-input">
+                                                <input
+                                                    type="text"
+                                                    value={option}
+                                                    onChange={(e) => handleOptionChange(index, e.target.value)}
+                                                    placeholder={`Opção ${index + 1}`}
+                                                    required
+                                                />
+                                                {formData.options.length > 1 && (
+                                                    <button
+                                                        type="button"
+                                                        className="remove-btn"
+                                                        onClick={() => removeOption(index)}
+                                                    >
+                                                        ×
+                                                    </button>
+                                                )}
+                                            </div>
+                                        ))}
+                                        <button
+                                            type="button"
+                                            className="add-option-btn"
+                                            onClick={addOption}
+                                        >
+                                            + Adicionar Opção
+                                        </button>
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="form-group">
+                                    <label htmlFor="textContent">Conteúdo da Mensagem:</label>
+                                    <textarea
+                                        id="textContent"
+                                        name="textContent"
+                                        value={formData.textContent}
+                                        onChange={handleInputChange}
+                                        rows="4"
+                                        required
+                                        placeholder="Digite o conteúdo da mensagem que será enviada..."
+                                    />
+                                    <small className="form-help">
+                                        Esta mensagem será enviada como uma notificação simples, sem opções de resposta.
+                                    </small>
+                                </div>
+                            )}
                             
                             <div className="form-actions">
                                 <button type="button" onClick={() => setShowForm(false)}>
