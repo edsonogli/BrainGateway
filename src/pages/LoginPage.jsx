@@ -1,5 +1,5 @@
 // src/pages/LoginPage.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApi } from '../contexts/ApiContext';
 import { useNavigate } from 'react-router-dom';
 import './LoginPage.css';
@@ -10,16 +10,45 @@ const LoginPage = () => {
     const [credentials, setCredentials] = useState({ email: '', password: '' });
     const [error, setError] = useState(null);
 
+    // Cleanup para evitar problemas com extensões do navegador
+    useEffect(() => {
+        // Função para capturar e ignorar erros de extensões
+        const handleUnhandledRejection = (event) => {
+            if (event.reason && event.reason.message && 
+                event.reason.message.includes('message channel closed')) {
+                console.warn('Ignorando erro de extensão do navegador:', event.reason.message);
+                event.preventDefault();
+            }
+        };
+
+        window.addEventListener('unhandledrejection', handleUnhandledRejection);
+
+        return () => {
+            window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+        };
+    }, []);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setCredentials((prev) => ({ ...prev, [name]: value }));
     };
 
+
+
     const handleLogin = async (e) => {
         e.preventDefault();
+        setError(null); // Limpa erros anteriores
+        
         try {
             console.log('Iniciando processo de login com:', credentials);
-            await login(credentials);
+            
+            // Timeout para o processo de login
+            const loginPromise = login(credentials);
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Timeout no login')), 30000)
+            );
+            
+            await Promise.race([loginPromise, timeoutPromise]);
             
             // Verifica se o token foi salvo corretamente
             const token = localStorage.getItem('authToken');
@@ -29,10 +58,17 @@ const LoginPage = () => {
                 throw new Error('Token não foi salvo após login');
             }
             
+            // Redireciona diretamente para o dashboard após login bem-sucedido
+            console.log('Login bem-sucedido, redirecionando para dashboard');
             navigate('/admin/dashboard');
         } catch (err) {
             console.error('Erro durante login:', err);
-            setError(`Falha no login: ${err.message || 'Verifique suas credenciais'}`);
+            const errorMessage = err.message || 'Verifique suas credenciais';
+            setError(`Falha no login: ${errorMessage}`);
+            
+            // Limpa dados em caso de erro
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userData');
         }
     };
 

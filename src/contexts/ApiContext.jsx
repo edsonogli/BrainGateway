@@ -15,6 +15,7 @@ export const ApiProvider = ({ children }) => {
     // Configuração do Axios para incluir o token de autenticação em todas as requisições
     const api = axios.create({
         baseURL: API_BASE_URL,
+        timeout: 30000, // 30 segundos de timeout
     });
 
     // Adiciona o token de autenticação ao cabeçalho da requisição e loga detalhes
@@ -56,19 +57,34 @@ export const ApiProvider = ({ children }) => {
             return response;
         },
         (error) => {
-            debugError('API Error:', {
+            // Tratamento mais robusto de erros
+            const errorInfo = {
                 status: error.response?.status,
                 data: error.response?.data,
-                message: error.message
-            });
-            if (error.response?.status === 401) {
+                message: error.message,
+                code: error.code
+            };
+            
+            debugError('API Error:', errorInfo);
+            
+            // Tratamento específico para diferentes tipos de erro
+            if (error.code === 'ECONNABORTED') {
+                debugError('Request timeout');
+            } else if (error.response?.status === 401) {
                 // Limpa o token e estado de autenticação
-                localStorage.removeItem('authToken');
-                localStorage.removeItem('userData');
-                setIsAuthenticated(false);
-                // Redireciona para a página de login
-                navigate('/login');
+                try {
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('userData');
+                    setIsAuthenticated(false);
+                    // Redireciona para a página de login apenas se não estivermos já na página de login
+                    if (window.location.pathname !== '/login') {
+                        navigate('/login');
+                    }
+                } catch (navError) {
+                    debugError('Erro ao navegar para login:', navError);
+                }
             }
+            
             return Promise.reject(error);
         }
     );
@@ -402,6 +418,43 @@ export const ApiProvider = ({ children }) => {
         withLoading(() => api.post(`/Auth/disable?idUser=${userId}`).then(response => response.data)),
     [withLoading]);
 
+    // Funções para termos de uso
+    const checkTermsAcceptance = useCallback(async () => {
+        try {
+            debugLog('Verificando status dos termos...');
+            const response = await withLoading(() => 
+                api.get('/Terms/status', { timeout: 10000 }).then(response => response.data)
+            );
+            debugLog('Status dos termos recebido:', response);
+            return response;
+        } catch (error) {
+            debugError('Erro ao verificar termos:', error);
+            // Retorna um objeto padrão em caso de erro
+            return { requiresAcceptance: false, currentTermsVersion: "1.0" };
+        }
+    }, [withLoading]);
+
+    const acceptTerms = useCallback(async (termsVersion = "1.0") => {
+        try {
+            debugLog('Aceitando termos com versão:', termsVersion);
+            const payload = {
+                termsVersion: termsVersion,
+                acceptanceMethod: "web",
+                additionalData: null
+            };
+            debugLog('Payload para aceite dos termos:', payload);
+            
+            const response = await withLoading(() => 
+                api.post('/Terms/accept', payload, { timeout: 10000 }).then(response => response.data)
+            );
+            debugLog('Termos aceitos com sucesso:', response);
+            return response;
+        } catch (error) {
+            debugError('Erro ao aceitar termos:', error);
+            throw error;
+        }
+    }, [withLoading]);
+
     const value = {
         login,
         getContacts,
@@ -458,6 +511,9 @@ export const ApiProvider = ({ children }) => {
         createUser,
         activateUser,
         disableUser,
+        // Terms management
+        checkTermsAcceptance,
+        acceptTerms,
         isLoading
     };
 
