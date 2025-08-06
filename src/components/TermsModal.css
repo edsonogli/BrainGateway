@@ -27,7 +27,7 @@
 .terms-modal-header {
     padding: 24px 24px 16px 24px;
     border-bottom: 1px solid #e5e7eb;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1a4332 0%, #2d5a46 100%);
     color: white;
 }
 
@@ -58,7 +58,7 @@
     font-weight: 600;
     margin: 0 0 16px 0;
     padding-bottom: 8px;
-    border-bottom: 2px solid #667eea;
+    border-bottom: 2px solid #2d5a46;
 }
 
 .terms-section h4 {
@@ -129,8 +129,8 @@
 }
 
 .checkbox-container input[type="checkbox"]:checked + .checkmark {
-    background-color: #667eea;
-    border-color: #667eea;
+    background-color: #2d5a46;
+    border-color: #2d5a46;
 }
 
 .checkbox-container input[type="checkbox"]:checked + .checkmark::after {
@@ -141,7 +141,7 @@
 }
 
 .checkbox-container:hover .checkmark {
-    border-color: #667eea;
+    border-color: #2d5a46;
 }
 
 .scroll-notice {
@@ -191,13 +191,13 @@
 }
 
 .btn-accept.enabled {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1a4332 0%, #2d5a46 100%);
     color: white;
 }
 
 .btn-accept.enabled:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 4px 12px rgba(45, 90, 70, 0.4);
 }
 
 .btn-accept.disabled {

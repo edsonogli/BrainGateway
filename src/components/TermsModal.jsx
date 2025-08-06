@@ -75,9 +75,24 @@ const TermsModal = ({ isOpen, onAccept, onDecline }) => {
                             <li>Práticas de spam ou uso não autorizado</li>
                             <li>Perdas comerciais decorrentes de banimentos</li>
                             <li>Interrupções no serviço do WhatsApp</li>
+                            <li><strong>Respostas geradas por serviços de IA externos (ChatGPT, Claude, etc.)</strong></li>
+                            <li><strong>Informações incorretas, inadequadas ou ofensivas geradas por IA</strong></li>
+                            <li><strong>Decisões tomadas com base em respostas de IA</strong></li>
                         </ul>
 
-                        <h4>4. Política Anti-Spam</h4>
+                        <h4>4. Aviso Importante sobre Inteligência Artificial</h4>
+                        <p><strong>ATENÇÃO:</strong> Nossa plataforma utiliza serviços de inteligência artificial externos, incluindo ChatGPT e outros modelos de IA. É importante estar ciente de que:</p>
+                        <ul>
+                            <li><strong>Limitações da IA:</strong> Os sistemas de IA podem gerar respostas incorretas, inadequadas ou enviesadas</li>
+                            <li><strong>Não são infalíveis:</strong> As respostas da IA não devem ser consideradas como verdade absoluta ou aconselhamento profissional</li>
+                            <li><strong>Verificação necessária:</strong> Sempre verifique informações importantes fornecidas pela IA</li>
+                            <li><strong>Responsabilidade do usuário:</strong> Você é responsável por revisar e validar todas as respostas antes de utilizá-las</li>
+                            <li><strong>Serviços externos:</strong> Estes serviços são fornecidos por terceiros (OpenAI, Anthropic, etc.) e estão sujeitos às suas próprias políticas</li>
+                            <li><strong>Sem garantias:</strong> Não garantimos a precisão, completude ou adequação das respostas geradas por IA</li>
+                        </ul>
+                        <p><strong>Recomendação:</strong> Use as respostas da IA como ponto de partida, mas sempre aplique seu julgamento crítico e, quando necessário, consulte profissionais qualificados.</p>
+
+                        <h4>5. Política Anti-Spam</h4>
                         <p>O WhatsApp mantém uma política severa contra spam. É PROIBIDO:</p>
                         <ul>
                             <li>Enviar mensagens em massa para contatos desconhecidos</li>
@@ -88,7 +103,7 @@ const TermsModal = ({ isOpen, onAccept, onDecline }) => {
                             <li>Enviar mensagens repetitivas ou irrelevantes</li>
                         </ul>
 
-                        <h4>5. Política de Privacidade</h4>
+                        <h4>6. Política de Privacidade</h4>
                         <p>Ao utilizar nossa plataforma, você concorda com nossa política de privacidade:</p>
                         <ul>
                             <li><strong>Coleta de Dados:</strong> Coletamos apenas dados necessários para o funcionamento da plataforma</li>
@@ -99,7 +114,7 @@ const TermsModal = ({ isOpen, onAccept, onDecline }) => {
                             <li><strong>Direitos:</strong> Você tem direito de acessar, corrigir ou excluir seus dados</li>
                         </ul>
 
-                        <h4>6. Proteção de Dados (LGPD)</h4>
+                        <h4>7. Proteção de Dados (LGPD)</h4>
                         <p>Em conformidade com a Lei Geral de Proteção de Dados (LGPD):</p>
                         <ul>
                             <li>Tratamos seus dados pessoais com transparência e segurança</li>
@@ -109,7 +124,7 @@ const TermsModal = ({ isOpen, onAccept, onDecline }) => {
                             <li>Você pode revogar seu consentimento a qualquer momento</li>
                         </ul>
 
-                        <h4>7. Monitoramento e Suspensão de Conta</h4>
+                        <h4>8. Monitoramento e Suspensão de Conta</h4>
                         <p>A OchatPro se reserva o direito de:</p>
                         <ul>
                             <li>Monitorar o uso da plataforma para detectar práticas inadequadas</li>
@@ -119,7 +134,7 @@ const TermsModal = ({ isOpen, onAccept, onDecline }) => {
                             <li>Cooperar com investigações sobre uso inadequado</li>
                         </ul>
 
-                        <h4>8. Consequências Legais</h4>
+                        <h4>9. Consequências Legais</h4>
                         <p>O usuário está ciente de que:</p>
                         <ul>
                             <li>O uso inadequado pode resultar em processos judiciais</li>
@@ -129,7 +144,7 @@ const TermsModal = ({ isOpen, onAccept, onDecline }) => {
                             <li>A OchatPro pode ser obrigada a fornecer dados em investigações</li>
                         </ul>
 
-                        <h4>9. Boas Práticas Recomendadas</h4>
+                        <h4>10. Boas Práticas Recomendadas</h4>
                         <p>Para um uso eficaz e seguro:</p>
                         <ul>
                             <li>Mantenha uma base de contatos limpa e atualizada</li>
@@ -141,10 +156,10 @@ const TermsModal = ({ isOpen, onAccept, onDecline }) => {
                             <li>Mantenha registros de consentimento</li>
                         </ul>
 
-                        <h4>10. Atualizações dos Termos</h4>
+                        <h4>11. Atualizações dos Termos</h4>
                         <p>Este termo pode ser atualizado periodicamente para refletir mudanças nas políticas do WhatsApp ou melhorias na plataforma. Usuários serão notificados sobre mudanças significativas.</p>
 
-                        <h4>11. Contato e Suporte</h4>
+                        <h4>12. Contato e Suporte</h4>
                         <p>Para dúvidas sobre estes termos ou nossa política de privacidade, entre em contato através dos canais oficiais de suporte da OchatPro.</p>
                     </div>
                 </div>
