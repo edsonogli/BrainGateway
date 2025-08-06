@@ -235,6 +235,7 @@ const FileUpload = () => {
         const statusConfig = {
             uploaded: { class: 'success', text: 'Enviado', icon: '✅' },
             processing: { class: 'warning', text: 'Processando', icon: '⏳' },
+            processed: { class: 'success', text: 'Processado', icon: '✅' },
             error: { class: 'error', text: 'Erro', icon: '❌' },
             deleted: { class: 'deleted', text: 'Excluído', icon: '🗑️' }
         };
@@ -345,10 +346,11 @@ const FileUpload = () => {
                         className="filter-select"
                     >
                         <option value="todos">Todos os status</option>
-                        <option value="processado">Processado</option>
-                        <option value="processando">Processando</option>
-                        <option value="erro">Com erro</option>
-                        <option value="pendente">Pendente</option>
+                        <option value="processed">Processado</option>
+                        <option value="processing">Processando</option>
+                        <option value="uploaded">Enviado</option>
+                        <option value="error">Com erro</option>
+                        <option value="deleted">Excluído</option>
                     </select>
                 </div>
             </div>
@@ -473,7 +475,7 @@ const FileUpload = () => {
                                                 >
                                                     👁️
                                                 </button>
-                                                {file.status !== 'processado' && (
+                                                {file.status !== 'processed' && (
                                                     <button 
                                                         className="btn-action delete" 
                                                         title="Excluir"
